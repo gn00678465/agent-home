@@ -1,0 +1,12 @@
+name: agent-home
+version: 0.1.0
+description: 個人 agent 工作入口：共用 skills、AGENTS.md 與其他 repo 的指標
+author: Madao
+targets:
+  - claude
+  - codex
+dependencies:
+  apm: []
+  mcp: []
+includes: auto
+scripts: {}

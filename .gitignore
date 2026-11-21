@@ -1,0 +1,10 @@
+
+# APM dependencies
+apm_modules/
+.DS_Store
+
+# apm-go install 的扇出結果，來源是 .apm/
+.claude/skills/
+.claude/agents/
+.agents/skills/
+.codex/agents/

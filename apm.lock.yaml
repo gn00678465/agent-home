@@ -1,0 +1,1199 @@
+lockfile_version: '1'
+dependencies: []
+deployments:
+- kind: project-relative
+  target: claude
+  value: .claude/agents/impeccable-ui-designer.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:652de8b170fe4d9cd5cb9a4744f57feb7869611f91e00dbd24f5a0a11798fe3b
+- kind: project-relative
+  target: claude
+  value: .claude/agents/subtractive-brake.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:b063f12a1c34fddcc489680019bd302fa4051ba3167c9c10592f01b7bd1f5d23
+- kind: project-relative
+  target: claude
+  value: .claude/skills/done-or-not
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/done-or-not/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:e1953345749ca6d23f4e7da9a7e326762d4bbd7fa5905f4693f3a3e8ec76f7ee
+- kind: project-relative
+  target: claude
+  value: .claude/skills/issue-template
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/issue-template/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:924964da149f3bfdec490aaa6704a1c424bed648cd56ac18548d37df824ab346
+- kind: project-relative
+  target: claude
+  value: .claude/skills/issue-template/evals/evals.json
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:7c084cbb84ab20fa5b08a65d36d95c0cef1c73d17e924209326b42d7adc6c8ec
+- kind: project-relative
+  target: claude
+  value: .claude/skills/issue-template/references/bug-report.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:4f715b731ecebcdb8b1a0d8d225083bc0cfcb3df724c17e132221de77b94c3fb
+- kind: project-relative
+  target: claude
+  value: .claude/skills/issue-template/references/config.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:bfe05eaad0a2d4444fd98574e6828a94d276ee11e973537123282a34925bff2e
+- kind: project-relative
+  target: claude
+  value: .claude/skills/issue-template/references/docs.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:f74dc2ef59b969267265ee4c9b2d5adea5a6cbf550062eb84210db21def2e3f7
+- kind: project-relative
+  target: claude
+  value: .claude/skills/issue-template/references/feature-request.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:f9c5e1d86922c63fbe5c6b43b5d1f5f8b5c594753df88ce91c8666dd372e9476
+- kind: project-relative
+  target: claude
+  value: .claude/skills/issue-template/references/issue-forms-guide.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:49d4b0422615348794a3e57e606e2d2f49ac17f5a8bd68d1bda76533a4cb5948
+- kind: project-relative
+  target: claude
+  value: .claude/skills/issue-template/references/issue-triage.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:80f26f2ba61029a2f2130ce802154f8a68b1904b0336cf8332037eb86d73e0b8
+- kind: project-relative
+  target: claude
+  value: .claude/skills/issue-template/references/task.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:b5080e7b799517b6d64ca3060b399ddf4f4be18d244526809d4ec0dfdf54a248
+- kind: project-relative
+  target: claude
+  value: .claude/skills/pull-request
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/pull-request/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:0bb078fee615041549470404d4ad525b87b6420adec055a2059cc3709b51067f
+- kind: project-relative
+  target: claude
+  value: .claude/skills/pull-request/evals/evals.json
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:b4d616165c6ef92446fbabd442ca7ec86c33c96d34e6291321d5b839ce29a96c
+- kind: project-relative
+  target: claude
+  value: .claude/skills/pull-request/references/gh-pr-commands.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:ba4e434b94b5fb54f27667f775ae98ef0a67fdac2c14b524c3aa320baa4a0932
+- kind: project-relative
+  target: claude
+  value: .claude/skills/pull-request/references/pr-template.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:118169b2e65fbfd3ce06a1fe4350c2a9863509c5e66ee15577af28bf68385c98
+- kind: project-relative
+  target: claude
+  value: .claude/skills/pull-request/references/repo-pr-template.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:cf0e02ead3685c2e9a2890f811c2e0ba089c3f31bb9cc89e43387075820c8dd2
+- kind: project-relative
+  target: claude
+  value: .claude/skills/review-forge
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/review-forge/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:ec70e0d68e628f1d7109acbe744c96aefbcb38d888508b064bbbccfbe15998db
+- kind: project-relative
+  target: claude
+  value: .claude/skills/review-forge/agents/openai.yaml
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:9093c98b56cbba18426141c5e062b3e9598ba397b4b9a7daee884bf97d33e3d6
+- kind: project-relative
+  target: claude
+  value: .claude/skills/review-forge/assets/schemas/final-report.schema.json
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:bca897b7b25c61346721813bad8648dea7ac8be51f2129c1ee60a85aad56b1e7
+- kind: project-relative
+  target: claude
+  value: .claude/skills/review-forge/assets/schemas/lane-review.schema.json
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:2aeac32029fd499dab9f9041ec8ed18309c41ab94a6a9d0ebd69379b297733b0
+- kind: project-relative
+  target: claude
+  value: .claude/skills/review-forge/assets/schemas/lane-vote.schema.json
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:ea9a5b58fa5bffdbad8f7cfb7e9b144704837e9f46f7a63c4e31f87318cd9169
+- kind: project-relative
+  target: claude
+  value: .claude/skills/review-forge/assets/schemas/scope.schema.json
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:ba59bf5c81d34e036a8136a69825c87e5b09a0ce6f932c188e0202ae02d2a9bd
+- kind: project-relative
+  target: claude
+  value: .claude/skills/review-forge/assets/schemas/summary.schema.json
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:a76907e9e6e91ec42e820d93b3e6c9c66f6a45b65698acaef8ae46a5b661ccf9
+- kind: project-relative
+  target: claude
+  value: .claude/skills/review-forge/assets/templates/final_report.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:8b85c1077297b1b3587ab018c754b359c84fb10dbfbcb96eb08329e460ea7c24
+- kind: project-relative
+  target: claude
+  value: .claude/skills/review-forge/assets/templates/fix_plan.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:0dc724b7e78e1b788f88ac4184971f2654fc58eb420450d1d4bd990225e7116b
+- kind: project-relative
+  target: claude
+  value: .claude/skills/review-forge/assets/templates/lane_brief.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:bed557dc99dea003cfff6f600586956ad5a486349082edfdc961394c579a3d8b
+- kind: project-relative
+  target: claude
+  value: .claude/skills/review-forge/assets/templates/review_summary.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:5230f6cce6393dcf1228f473cf5ae8d52d80a5368eaeaa0d9fbf8910ad37bf01
+- kind: project-relative
+  target: claude
+  value: .claude/skills/review-forge/assets/templates/status.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:417dabcd3f9e0d5477097a03d67ed5a4987354f70c01f7d103f9621785310048
+- kind: project-relative
+  target: claude
+  value: .claude/skills/review-forge/assets/templates/verify_report.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:048de73333cfe31a02754fdba865d38a237628e4461a9adb74dea81cb8480eb5
+- kind: project-relative
+  target: claude
+  value: .claude/skills/review-forge/evals/evals.json
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:ed0c9f8830ff4add28f92c86f85f44b8b65e019122b4cfbb2de3dad48d93fa23
+- kind: project-relative
+  target: claude
+  value: .claude/skills/review-forge/references/lanes.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:2a36d17b966345a5d590bc118f5a55d5be4a3705fd969c02b7be8e398758107b
+- kind: project-relative
+  target: claude
+  value: .claude/skills/review-forge/references/reviewer-contract.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:3b237bcdaad2c8c6f447877df08e579ec891f1dc4ac8a4e13b35931684eda743
+- kind: project-relative
+  target: claude
+  value: .claude/skills/review-forge/scripts/report.py
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:1aba441433b323b5ccc1baddfb000e77b5c013beef7cc30ed62356ed58296a45
+- kind: project-relative
+  target: claude
+  value: .claude/skills/review-forge/scripts/validate.py
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:00961d4fe710152f39acb42d0538f4100f14e471d261664a3d354e45d3e70dc0
+- kind: project-relative
+  target: claude
+  value: .claude/skills/slim-agents-md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/slim-agents-md/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:9d2fb99edc82bd4654b394ffb85a4339560ede54277f24ab666ed92fecdbe4e1
+- kind: project-relative
+  target: claude
+  value: .claude/skills/slim-agents-md/evals/evals.json
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:40f113822d93b337ca4139d0c68b31e865f1c5eff1756206cd4d8641d5cd44c0
+- kind: project-relative
+  target: claude
+  value: .claude/skills/slim-agents-md/references/principles.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:76d89cfb43915dd73232a045593854257142727c693cf4ef610d4b53d914cc92
+- kind: project-relative
+  target: claude
+  value: .claude/skills/subtractive-engineering
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/subtractive-engineering/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:29b6c886ad84b4894f72f764a3acfd9a51cc3d3edc75302601d8b441d6dfbd61
+- kind: project-relative
+  target: claude
+  value: .claude/skills/subtractive-engineering/agents/openai.yaml
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:2572651893315d373e08f8546731b235035b869532b77cdc8898eecd9d054257
+- kind: project-relative
+  target: claude
+  value: .claude/skills/superagent
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/superagent/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:bac8f53ae362147b86c532ddc5cb0236dbf94f6599a42c4b65ac9dfd86d12ee4
+- kind: project-relative
+  target: claude
+  value: .claude/skills/superagent/references/backends.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:35c3e900fb6c6d1d46f5ad2b1e9ec8ee7d0f835bfc41777ac4cfdeb2b7fb4b11
+- kind: project-relative
+  target: claude
+  value: .claude/skills/superagent/references/brief_templates.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:1e18f7d4abfba62d73774c18a8dbd0418405d60f594e612eec3309756f3291d7
+- kind: project-relative
+  target: claude
+  value: .claude/skills/superagent/references/watchdog_protocol.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:795026cfa9d2412bcbbc5db9c59c878372cb72bf78892ced9add9b7fea4e1bfe
+- kind: project-relative
+  target: claude
+  value: .claude/skills/superagent/scripts/superagent.py
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:7a7fa1dac98f2e451c60a2c16858ca1b93b73359ebd559c0ff915476dbd14409
+- kind: project-relative
+  target: claude
+  value: .claude/skills/ui-design
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/ui-design/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:0092027883658b9491b24bb634a49b792cd01701a03d2b59ffbb5066cf427995
+- kind: project-relative
+  target: claude
+  value: .claude/skills/ui-design/agents/openai.yaml
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:aea4eaf83e0ab74b92eae3143ff70e2b681673cd288544e2ac83e39f6bc96d27
+- kind: project-relative
+  target: codex
+  value: .agents/skills/done-or-not
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: codex
+  value: .agents/skills/done-or-not/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:e1953345749ca6d23f4e7da9a7e326762d4bbd7fa5905f4693f3a3e8ec76f7ee
+- kind: project-relative
+  target: codex
+  value: .agents/skills/issue-template
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: codex
+  value: .agents/skills/issue-template/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:924964da149f3bfdec490aaa6704a1c424bed648cd56ac18548d37df824ab346
+- kind: project-relative
+  target: codex
+  value: .agents/skills/issue-template/evals/evals.json
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:7c084cbb84ab20fa5b08a65d36d95c0cef1c73d17e924209326b42d7adc6c8ec
+- kind: project-relative
+  target: codex
+  value: .agents/skills/issue-template/references/bug-report.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:4f715b731ecebcdb8b1a0d8d225083bc0cfcb3df724c17e132221de77b94c3fb
+- kind: project-relative
+  target: codex
+  value: .agents/skills/issue-template/references/config.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:bfe05eaad0a2d4444fd98574e6828a94d276ee11e973537123282a34925bff2e
+- kind: project-relative
+  target: codex
+  value: .agents/skills/issue-template/references/docs.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:f74dc2ef59b969267265ee4c9b2d5adea5a6cbf550062eb84210db21def2e3f7
+- kind: project-relative
+  target: codex
+  value: .agents/skills/issue-template/references/feature-request.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:f9c5e1d86922c63fbe5c6b43b5d1f5f8b5c594753df88ce91c8666dd372e9476
+- kind: project-relative
+  target: codex
+  value: .agents/skills/issue-template/references/issue-forms-guide.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:49d4b0422615348794a3e57e606e2d2f49ac17f5a8bd68d1bda76533a4cb5948
+- kind: project-relative
+  target: codex
+  value: .agents/skills/issue-template/references/issue-triage.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:80f26f2ba61029a2f2130ce802154f8a68b1904b0336cf8332037eb86d73e0b8
+- kind: project-relative
+  target: codex
+  value: .agents/skills/issue-template/references/task.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:b5080e7b799517b6d64ca3060b399ddf4f4be18d244526809d4ec0dfdf54a248
+- kind: project-relative
+  target: codex
+  value: .agents/skills/pull-request
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: codex
+  value: .agents/skills/pull-request/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:0bb078fee615041549470404d4ad525b87b6420adec055a2059cc3709b51067f
+- kind: project-relative
+  target: codex
+  value: .agents/skills/pull-request/evals/evals.json
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:b4d616165c6ef92446fbabd442ca7ec86c33c96d34e6291321d5b839ce29a96c
+- kind: project-relative
+  target: codex
+  value: .agents/skills/pull-request/references/gh-pr-commands.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:ba4e434b94b5fb54f27667f775ae98ef0a67fdac2c14b524c3aa320baa4a0932
+- kind: project-relative
+  target: codex
+  value: .agents/skills/pull-request/references/pr-template.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:118169b2e65fbfd3ce06a1fe4350c2a9863509c5e66ee15577af28bf68385c98
+- kind: project-relative
+  target: codex
+  value: .agents/skills/pull-request/references/repo-pr-template.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:cf0e02ead3685c2e9a2890f811c2e0ba089c3f31bb9cc89e43387075820c8dd2
+- kind: project-relative
+  target: codex
+  value: .agents/skills/review-forge
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: codex
+  value: .agents/skills/review-forge/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:ec70e0d68e628f1d7109acbe744c96aefbcb38d888508b064bbbccfbe15998db
+- kind: project-relative
+  target: codex
+  value: .agents/skills/review-forge/agents/openai.yaml
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:9093c98b56cbba18426141c5e062b3e9598ba397b4b9a7daee884bf97d33e3d6
+- kind: project-relative
+  target: codex
+  value: .agents/skills/review-forge/assets/schemas/final-report.schema.json
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:bca897b7b25c61346721813bad8648dea7ac8be51f2129c1ee60a85aad56b1e7
+- kind: project-relative
+  target: codex
+  value: .agents/skills/review-forge/assets/schemas/lane-review.schema.json
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:2aeac32029fd499dab9f9041ec8ed18309c41ab94a6a9d0ebd69379b297733b0
+- kind: project-relative
+  target: codex
+  value: .agents/skills/review-forge/assets/schemas/lane-vote.schema.json
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:ea9a5b58fa5bffdbad8f7cfb7e9b144704837e9f46f7a63c4e31f87318cd9169
+- kind: project-relative
+  target: codex
+  value: .agents/skills/review-forge/assets/schemas/scope.schema.json
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:ba59bf5c81d34e036a8136a69825c87e5b09a0ce6f932c188e0202ae02d2a9bd
+- kind: project-relative
+  target: codex
+  value: .agents/skills/review-forge/assets/schemas/summary.schema.json
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:a76907e9e6e91ec42e820d93b3e6c9c66f6a45b65698acaef8ae46a5b661ccf9
+- kind: project-relative
+  target: codex
+  value: .agents/skills/review-forge/assets/templates/final_report.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:8b85c1077297b1b3587ab018c754b359c84fb10dbfbcb96eb08329e460ea7c24
+- kind: project-relative
+  target: codex
+  value: .agents/skills/review-forge/assets/templates/fix_plan.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:0dc724b7e78e1b788f88ac4184971f2654fc58eb420450d1d4bd990225e7116b
+- kind: project-relative
+  target: codex
+  value: .agents/skills/review-forge/assets/templates/lane_brief.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:bed557dc99dea003cfff6f600586956ad5a486349082edfdc961394c579a3d8b
+- kind: project-relative
+  target: codex
+  value: .agents/skills/review-forge/assets/templates/review_summary.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:5230f6cce6393dcf1228f473cf5ae8d52d80a5368eaeaa0d9fbf8910ad37bf01
+- kind: project-relative
+  target: codex
+  value: .agents/skills/review-forge/assets/templates/status.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:417dabcd3f9e0d5477097a03d67ed5a4987354f70c01f7d103f9621785310048
+- kind: project-relative
+  target: codex
+  value: .agents/skills/review-forge/assets/templates/verify_report.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:048de73333cfe31a02754fdba865d38a237628e4461a9adb74dea81cb8480eb5
+- kind: project-relative
+  target: codex
+  value: .agents/skills/review-forge/evals/evals.json
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:ed0c9f8830ff4add28f92c86f85f44b8b65e019122b4cfbb2de3dad48d93fa23
+- kind: project-relative
+  target: codex
+  value: .agents/skills/review-forge/references/lanes.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:2a36d17b966345a5d590bc118f5a55d5be4a3705fd969c02b7be8e398758107b
+- kind: project-relative
+  target: codex
+  value: .agents/skills/review-forge/references/reviewer-contract.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:3b237bcdaad2c8c6f447877df08e579ec891f1dc4ac8a4e13b35931684eda743
+- kind: project-relative
+  target: codex
+  value: .agents/skills/review-forge/scripts/report.py
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:1aba441433b323b5ccc1baddfb000e77b5c013beef7cc30ed62356ed58296a45
+- kind: project-relative
+  target: codex
+  value: .agents/skills/review-forge/scripts/validate.py
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:00961d4fe710152f39acb42d0538f4100f14e471d261664a3d354e45d3e70dc0
+- kind: project-relative
+  target: codex
+  value: .agents/skills/slim-agents-md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: codex
+  value: .agents/skills/slim-agents-md/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:9d2fb99edc82bd4654b394ffb85a4339560ede54277f24ab666ed92fecdbe4e1
+- kind: project-relative
+  target: codex
+  value: .agents/skills/slim-agents-md/evals/evals.json
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:40f113822d93b337ca4139d0c68b31e865f1c5eff1756206cd4d8641d5cd44c0
+- kind: project-relative
+  target: codex
+  value: .agents/skills/slim-agents-md/references/principles.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:76d89cfb43915dd73232a045593854257142727c693cf4ef610d4b53d914cc92
+- kind: project-relative
+  target: codex
+  value: .agents/skills/subtractive-engineering
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: codex
+  value: .agents/skills/subtractive-engineering/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:29b6c886ad84b4894f72f764a3acfd9a51cc3d3edc75302601d8b441d6dfbd61
+- kind: project-relative
+  target: codex
+  value: .agents/skills/subtractive-engineering/agents/openai.yaml
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:2572651893315d373e08f8546731b235035b869532b77cdc8898eecd9d054257
+- kind: project-relative
+  target: codex
+  value: .agents/skills/superagent
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: codex
+  value: .agents/skills/superagent/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:bac8f53ae362147b86c532ddc5cb0236dbf94f6599a42c4b65ac9dfd86d12ee4
+- kind: project-relative
+  target: codex
+  value: .agents/skills/superagent/references/backends.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:35c3e900fb6c6d1d46f5ad2b1e9ec8ee7d0f835bfc41777ac4cfdeb2b7fb4b11
+- kind: project-relative
+  target: codex
+  value: .agents/skills/superagent/references/brief_templates.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:1e18f7d4abfba62d73774c18a8dbd0418405d60f594e612eec3309756f3291d7
+- kind: project-relative
+  target: codex
+  value: .agents/skills/superagent/references/watchdog_protocol.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:795026cfa9d2412bcbbc5db9c59c878372cb72bf78892ced9add9b7fea4e1bfe
+- kind: project-relative
+  target: codex
+  value: .agents/skills/superagent/scripts/superagent.py
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:7a7fa1dac98f2e451c60a2c16858ca1b93b73359ebd559c0ff915476dbd14409
+- kind: project-relative
+  target: codex
+  value: .agents/skills/ui-design
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: codex
+  value: .agents/skills/ui-design/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:0092027883658b9491b24bb634a49b792cd01701a03d2b59ffbb5066cf427995
+- kind: project-relative
+  target: codex
+  value: .agents/skills/ui-design/agents/openai.yaml
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:aea4eaf83e0ab74b92eae3143ff70e2b681673cd288544e2ac83e39f6bc96d27
+- kind: project-relative
+  target: codex
+  value: .codex/agents/impeccable-ui-designer.toml
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:2537476ff752ba66dd3883f3c28cd42e2320312a23d6ca8eb4c6154c21a4368a
+- kind: project-relative
+  target: codex
+  value: .codex/agents/subtractive-brake.toml
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:2a5a3a1729c67fb0d212b6d71e6e4d1c378ca33e597c3c30cb03851cba153e02
+local_deployed_files:
+- .agents/skills/done-or-not
+- .agents/skills/done-or-not/SKILL.md
+- .agents/skills/issue-template
+- .agents/skills/issue-template/SKILL.md
+- .agents/skills/issue-template/evals/evals.json
+- .agents/skills/issue-template/references/bug-report.md
+- .agents/skills/issue-template/references/config.md
+- .agents/skills/issue-template/references/docs.md
+- .agents/skills/issue-template/references/feature-request.md
+- .agents/skills/issue-template/references/issue-forms-guide.md
+- .agents/skills/issue-template/references/issue-triage.md
+- .agents/skills/issue-template/references/task.md
+- .agents/skills/pull-request
+- .agents/skills/pull-request/SKILL.md
+- .agents/skills/pull-request/evals/evals.json
+- .agents/skills/pull-request/references/gh-pr-commands.md
+- .agents/skills/pull-request/references/pr-template.md
+- .agents/skills/pull-request/references/repo-pr-template.md
+- .agents/skills/review-forge
+- .agents/skills/review-forge/SKILL.md
+- .agents/skills/review-forge/agents/openai.yaml
+- .agents/skills/review-forge/assets/schemas/final-report.schema.json
+- .agents/skills/review-forge/assets/schemas/lane-review.schema.json
+- .agents/skills/review-forge/assets/schemas/lane-vote.schema.json
+- .agents/skills/review-forge/assets/schemas/scope.schema.json
+- .agents/skills/review-forge/assets/schemas/summary.schema.json
+- .agents/skills/review-forge/assets/templates/final_report.md
+- .agents/skills/review-forge/assets/templates/fix_plan.md
+- .agents/skills/review-forge/assets/templates/lane_brief.md
+- .agents/skills/review-forge/assets/templates/review_summary.md
+- .agents/skills/review-forge/assets/templates/status.md
+- .agents/skills/review-forge/assets/templates/verify_report.md
+- .agents/skills/review-forge/evals/evals.json
+- .agents/skills/review-forge/references/lanes.md
+- .agents/skills/review-forge/references/reviewer-contract.md
+- .agents/skills/review-forge/scripts/report.py
+- .agents/skills/review-forge/scripts/validate.py
+- .agents/skills/slim-agents-md
+- .agents/skills/slim-agents-md/SKILL.md
+- .agents/skills/slim-agents-md/evals/evals.json
+- .agents/skills/slim-agents-md/references/principles.md
+- .agents/skills/subtractive-engineering
+- .agents/skills/subtractive-engineering/SKILL.md
+- .agents/skills/subtractive-engineering/agents/openai.yaml
+- .agents/skills/superagent
+- .agents/skills/superagent/SKILL.md
+- .agents/skills/superagent/references/backends.md
+- .agents/skills/superagent/references/brief_templates.md
+- .agents/skills/superagent/references/watchdog_protocol.md
+- .agents/skills/superagent/scripts/superagent.py
+- .agents/skills/ui-design
+- .agents/skills/ui-design/SKILL.md
+- .agents/skills/ui-design/agents/openai.yaml
+- .claude/agents/impeccable-ui-designer.md
+- .claude/agents/subtractive-brake.md
+- .claude/skills/done-or-not
+- .claude/skills/done-or-not/SKILL.md
+- .claude/skills/issue-template
+- .claude/skills/issue-template/SKILL.md
+- .claude/skills/issue-template/evals/evals.json
+- .claude/skills/issue-template/references/bug-report.md
+- .claude/skills/issue-template/references/config.md
+- .claude/skills/issue-template/references/docs.md
+- .claude/skills/issue-template/references/feature-request.md
+- .claude/skills/issue-template/references/issue-forms-guide.md
+- .claude/skills/issue-template/references/issue-triage.md
+- .claude/skills/issue-template/references/task.md
+- .claude/skills/pull-request
+- .claude/skills/pull-request/SKILL.md
+- .claude/skills/pull-request/evals/evals.json
+- .claude/skills/pull-request/references/gh-pr-commands.md
+- .claude/skills/pull-request/references/pr-template.md
+- .claude/skills/pull-request/references/repo-pr-template.md
+- .claude/skills/review-forge
+- .claude/skills/review-forge/SKILL.md
+- .claude/skills/review-forge/agents/openai.yaml
+- .claude/skills/review-forge/assets/schemas/final-report.schema.json
+- .claude/skills/review-forge/assets/schemas/lane-review.schema.json
+- .claude/skills/review-forge/assets/schemas/lane-vote.schema.json
+- .claude/skills/review-forge/assets/schemas/scope.schema.json
+- .claude/skills/review-forge/assets/schemas/summary.schema.json
+- .claude/skills/review-forge/assets/templates/final_report.md
+- .claude/skills/review-forge/assets/templates/fix_plan.md
+- .claude/skills/review-forge/assets/templates/lane_brief.md
+- .claude/skills/review-forge/assets/templates/review_summary.md
+- .claude/skills/review-forge/assets/templates/status.md
+- .claude/skills/review-forge/assets/templates/verify_report.md
+- .claude/skills/review-forge/evals/evals.json
+- .claude/skills/review-forge/references/lanes.md
+- .claude/skills/review-forge/references/reviewer-contract.md
+- .claude/skills/review-forge/scripts/report.py
+- .claude/skills/review-forge/scripts/validate.py
+- .claude/skills/slim-agents-md
+- .claude/skills/slim-agents-md/SKILL.md
+- .claude/skills/slim-agents-md/evals/evals.json
+- .claude/skills/slim-agents-md/references/principles.md
+- .claude/skills/subtractive-engineering
+- .claude/skills/subtractive-engineering/SKILL.md
+- .claude/skills/subtractive-engineering/agents/openai.yaml
+- .claude/skills/superagent
+- .claude/skills/superagent/SKILL.md
+- .claude/skills/superagent/references/backends.md
+- .claude/skills/superagent/references/brief_templates.md
+- .claude/skills/superagent/references/watchdog_protocol.md
+- .claude/skills/superagent/scripts/superagent.py
+- .claude/skills/ui-design
+- .claude/skills/ui-design/SKILL.md
+- .claude/skills/ui-design/agents/openai.yaml
+- .codex/agents/impeccable-ui-designer.toml
+- .codex/agents/subtractive-brake.toml
+local_deployed_file_hashes:
+  .agents/skills/done-or-not/SKILL.md: sha256:e1953345749ca6d23f4e7da9a7e326762d4bbd7fa5905f4693f3a3e8ec76f7ee
+  .agents/skills/issue-template/SKILL.md: sha256:924964da149f3bfdec490aaa6704a1c424bed648cd56ac18548d37df824ab346
+  .agents/skills/issue-template/evals/evals.json: sha256:7c084cbb84ab20fa5b08a65d36d95c0cef1c73d17e924209326b42d7adc6c8ec
+  .agents/skills/issue-template/references/bug-report.md: sha256:4f715b731ecebcdb8b1a0d8d225083bc0cfcb3df724c17e132221de77b94c3fb
+  .agents/skills/issue-template/references/config.md: sha256:bfe05eaad0a2d4444fd98574e6828a94d276ee11e973537123282a34925bff2e
+  .agents/skills/issue-template/references/docs.md: sha256:f74dc2ef59b969267265ee4c9b2d5adea5a6cbf550062eb84210db21def2e3f7
+  .agents/skills/issue-template/references/feature-request.md: sha256:f9c5e1d86922c63fbe5c6b43b5d1f5f8b5c594753df88ce91c8666dd372e9476
+  .agents/skills/issue-template/references/issue-forms-guide.md: sha256:49d4b0422615348794a3e57e606e2d2f49ac17f5a8bd68d1bda76533a4cb5948
+  .agents/skills/issue-template/references/issue-triage.md: sha256:80f26f2ba61029a2f2130ce802154f8a68b1904b0336cf8332037eb86d73e0b8
+  .agents/skills/issue-template/references/task.md: sha256:b5080e7b799517b6d64ca3060b399ddf4f4be18d244526809d4ec0dfdf54a248
+  .agents/skills/pull-request/SKILL.md: sha256:0bb078fee615041549470404d4ad525b87b6420adec055a2059cc3709b51067f
+  .agents/skills/pull-request/evals/evals.json: sha256:b4d616165c6ef92446fbabd442ca7ec86c33c96d34e6291321d5b839ce29a96c
+  .agents/skills/pull-request/references/gh-pr-commands.md: sha256:ba4e434b94b5fb54f27667f775ae98ef0a67fdac2c14b524c3aa320baa4a0932
+  .agents/skills/pull-request/references/pr-template.md: sha256:118169b2e65fbfd3ce06a1fe4350c2a9863509c5e66ee15577af28bf68385c98
+  .agents/skills/pull-request/references/repo-pr-template.md: sha256:cf0e02ead3685c2e9a2890f811c2e0ba089c3f31bb9cc89e43387075820c8dd2
+  .agents/skills/review-forge/SKILL.md: sha256:ec70e0d68e628f1d7109acbe744c96aefbcb38d888508b064bbbccfbe15998db
+  .agents/skills/review-forge/agents/openai.yaml: sha256:9093c98b56cbba18426141c5e062b3e9598ba397b4b9a7daee884bf97d33e3d6
+  .agents/skills/review-forge/assets/schemas/final-report.schema.json: sha256:bca897b7b25c61346721813bad8648dea7ac8be51f2129c1ee60a85aad56b1e7
+  .agents/skills/review-forge/assets/schemas/lane-review.schema.json: sha256:2aeac32029fd499dab9f9041ec8ed18309c41ab94a6a9d0ebd69379b297733b0
+  .agents/skills/review-forge/assets/schemas/lane-vote.schema.json: sha256:ea9a5b58fa5bffdbad8f7cfb7e9b144704837e9f46f7a63c4e31f87318cd9169
+  .agents/skills/review-forge/assets/schemas/scope.schema.json: sha256:ba59bf5c81d34e036a8136a69825c87e5b09a0ce6f932c188e0202ae02d2a9bd
+  .agents/skills/review-forge/assets/schemas/summary.schema.json: sha256:a76907e9e6e91ec42e820d93b3e6c9c66f6a45b65698acaef8ae46a5b661ccf9
+  .agents/skills/review-forge/assets/templates/final_report.md: sha256:8b85c1077297b1b3587ab018c754b359c84fb10dbfbcb96eb08329e460ea7c24
+  .agents/skills/review-forge/assets/templates/fix_plan.md: sha256:0dc724b7e78e1b788f88ac4184971f2654fc58eb420450d1d4bd990225e7116b
+  .agents/skills/review-forge/assets/templates/lane_brief.md: sha256:bed557dc99dea003cfff6f600586956ad5a486349082edfdc961394c579a3d8b
+  .agents/skills/review-forge/assets/templates/review_summary.md: sha256:5230f6cce6393dcf1228f473cf5ae8d52d80a5368eaeaa0d9fbf8910ad37bf01
+  .agents/skills/review-forge/assets/templates/status.md: sha256:417dabcd3f9e0d5477097a03d67ed5a4987354f70c01f7d103f9621785310048
+  .agents/skills/review-forge/assets/templates/verify_report.md: sha256:048de73333cfe31a02754fdba865d38a237628e4461a9adb74dea81cb8480eb5
+  .agents/skills/review-forge/evals/evals.json: sha256:ed0c9f8830ff4add28f92c86f85f44b8b65e019122b4cfbb2de3dad48d93fa23
+  .agents/skills/review-forge/references/lanes.md: sha256:2a36d17b966345a5d590bc118f5a55d5be4a3705fd969c02b7be8e398758107b
+  .agents/skills/review-forge/references/reviewer-contract.md: sha256:3b237bcdaad2c8c6f447877df08e579ec891f1dc4ac8a4e13b35931684eda743
+  .agents/skills/review-forge/scripts/report.py: sha256:1aba441433b323b5ccc1baddfb000e77b5c013beef7cc30ed62356ed58296a45
+  .agents/skills/review-forge/scripts/validate.py: sha256:00961d4fe710152f39acb42d0538f4100f14e471d261664a3d354e45d3e70dc0
+  .agents/skills/slim-agents-md/SKILL.md: sha256:9d2fb99edc82bd4654b394ffb85a4339560ede54277f24ab666ed92fecdbe4e1
+  .agents/skills/slim-agents-md/evals/evals.json: sha256:40f113822d93b337ca4139d0c68b31e865f1c5eff1756206cd4d8641d5cd44c0
+  .agents/skills/slim-agents-md/references/principles.md: sha256:76d89cfb43915dd73232a045593854257142727c693cf4ef610d4b53d914cc92
+  .agents/skills/subtractive-engineering/SKILL.md: sha256:29b6c886ad84b4894f72f764a3acfd9a51cc3d3edc75302601d8b441d6dfbd61
+  .agents/skills/subtractive-engineering/agents/openai.yaml: sha256:2572651893315d373e08f8546731b235035b869532b77cdc8898eecd9d054257
+  .agents/skills/superagent/SKILL.md: sha256:bac8f53ae362147b86c532ddc5cb0236dbf94f6599a42c4b65ac9dfd86d12ee4
+  .agents/skills/superagent/references/backends.md: sha256:35c3e900fb6c6d1d46f5ad2b1e9ec8ee7d0f835bfc41777ac4cfdeb2b7fb4b11
+  .agents/skills/superagent/references/brief_templates.md: sha256:1e18f7d4abfba62d73774c18a8dbd0418405d60f594e612eec3309756f3291d7
+  .agents/skills/superagent/references/watchdog_protocol.md: sha256:795026cfa9d2412bcbbc5db9c59c878372cb72bf78892ced9add9b7fea4e1bfe
+  .agents/skills/superagent/scripts/superagent.py: sha256:7a7fa1dac98f2e451c60a2c16858ca1b93b73359ebd559c0ff915476dbd14409
+  .agents/skills/ui-design/SKILL.md: sha256:0092027883658b9491b24bb634a49b792cd01701a03d2b59ffbb5066cf427995
+  .agents/skills/ui-design/agents/openai.yaml: sha256:aea4eaf83e0ab74b92eae3143ff70e2b681673cd288544e2ac83e39f6bc96d27
+  .claude/agents/impeccable-ui-designer.md: sha256:652de8b170fe4d9cd5cb9a4744f57feb7869611f91e00dbd24f5a0a11798fe3b
+  .claude/agents/subtractive-brake.md: sha256:b063f12a1c34fddcc489680019bd302fa4051ba3167c9c10592f01b7bd1f5d23
+  .claude/skills/done-or-not/SKILL.md: sha256:e1953345749ca6d23f4e7da9a7e326762d4bbd7fa5905f4693f3a3e8ec76f7ee
+  .claude/skills/issue-template/SKILL.md: sha256:924964da149f3bfdec490aaa6704a1c424bed648cd56ac18548d37df824ab346
+  .claude/skills/issue-template/evals/evals.json: sha256:7c084cbb84ab20fa5b08a65d36d95c0cef1c73d17e924209326b42d7adc6c8ec
+  .claude/skills/issue-template/references/bug-report.md: sha256:4f715b731ecebcdb8b1a0d8d225083bc0cfcb3df724c17e132221de77b94c3fb
+  .claude/skills/issue-template/references/config.md: sha256:bfe05eaad0a2d4444fd98574e6828a94d276ee11e973537123282a34925bff2e
+  .claude/skills/issue-template/references/docs.md: sha256:f74dc2ef59b969267265ee4c9b2d5adea5a6cbf550062eb84210db21def2e3f7
+  .claude/skills/issue-template/references/feature-request.md: sha256:f9c5e1d86922c63fbe5c6b43b5d1f5f8b5c594753df88ce91c8666dd372e9476
+  .claude/skills/issue-template/references/issue-forms-guide.md: sha256:49d4b0422615348794a3e57e606e2d2f49ac17f5a8bd68d1bda76533a4cb5948
+  .claude/skills/issue-template/references/issue-triage.md: sha256:80f26f2ba61029a2f2130ce802154f8a68b1904b0336cf8332037eb86d73e0b8
+  .claude/skills/issue-template/references/task.md: sha256:b5080e7b799517b6d64ca3060b399ddf4f4be18d244526809d4ec0dfdf54a248
+  .claude/skills/pull-request/SKILL.md: sha256:0bb078fee615041549470404d4ad525b87b6420adec055a2059cc3709b51067f
+  .claude/skills/pull-request/evals/evals.json: sha256:b4d616165c6ef92446fbabd442ca7ec86c33c96d34e6291321d5b839ce29a96c
+  .claude/skills/pull-request/references/gh-pr-commands.md: sha256:ba4e434b94b5fb54f27667f775ae98ef0a67fdac2c14b524c3aa320baa4a0932
+  .claude/skills/pull-request/references/pr-template.md: sha256:118169b2e65fbfd3ce06a1fe4350c2a9863509c5e66ee15577af28bf68385c98
+  .claude/skills/pull-request/references/repo-pr-template.md: sha256:cf0e02ead3685c2e9a2890f811c2e0ba089c3f31bb9cc89e43387075820c8dd2
+  .claude/skills/review-forge/SKILL.md: sha256:ec70e0d68e628f1d7109acbe744c96aefbcb38d888508b064bbbccfbe15998db
+  .claude/skills/review-forge/agents/openai.yaml: sha256:9093c98b56cbba18426141c5e062b3e9598ba397b4b9a7daee884bf97d33e3d6
+  .claude/skills/review-forge/assets/schemas/final-report.schema.json: sha256:bca897b7b25c61346721813bad8648dea7ac8be51f2129c1ee60a85aad56b1e7
+  .claude/skills/review-forge/assets/schemas/lane-review.schema.json: sha256:2aeac32029fd499dab9f9041ec8ed18309c41ab94a6a9d0ebd69379b297733b0
+  .claude/skills/review-forge/assets/schemas/lane-vote.schema.json: sha256:ea9a5b58fa5bffdbad8f7cfb7e9b144704837e9f46f7a63c4e31f87318cd9169
+  .claude/skills/review-forge/assets/schemas/scope.schema.json: sha256:ba59bf5c81d34e036a8136a69825c87e5b09a0ce6f932c188e0202ae02d2a9bd
+  .claude/skills/review-forge/assets/schemas/summary.schema.json: sha256:a76907e9e6e91ec42e820d93b3e6c9c66f6a45b65698acaef8ae46a5b661ccf9
+  .claude/skills/review-forge/assets/templates/final_report.md: sha256:8b85c1077297b1b3587ab018c754b359c84fb10dbfbcb96eb08329e460ea7c24
+  .claude/skills/review-forge/assets/templates/fix_plan.md: sha256:0dc724b7e78e1b788f88ac4184971f2654fc58eb420450d1d4bd990225e7116b
+  .claude/skills/review-forge/assets/templates/lane_brief.md: sha256:bed557dc99dea003cfff6f600586956ad5a486349082edfdc961394c579a3d8b
+  .claude/skills/review-forge/assets/templates/review_summary.md: sha256:5230f6cce6393dcf1228f473cf5ae8d52d80a5368eaeaa0d9fbf8910ad37bf01
+  .claude/skills/review-forge/assets/templates/status.md: sha256:417dabcd3f9e0d5477097a03d67ed5a4987354f70c01f7d103f9621785310048
+  .claude/skills/review-forge/assets/templates/verify_report.md: sha256:048de73333cfe31a02754fdba865d38a237628e4461a9adb74dea81cb8480eb5
+  .claude/skills/review-forge/evals/evals.json: sha256:ed0c9f8830ff4add28f92c86f85f44b8b65e019122b4cfbb2de3dad48d93fa23
+  .claude/skills/review-forge/references/lanes.md: sha256:2a36d17b966345a5d590bc118f5a55d5be4a3705fd969c02b7be8e398758107b
+  .claude/skills/review-forge/references/reviewer-contract.md: sha256:3b237bcdaad2c8c6f447877df08e579ec891f1dc4ac8a4e13b35931684eda743
+  .claude/skills/review-forge/scripts/report.py: sha256:1aba441433b323b5ccc1baddfb000e77b5c013beef7cc30ed62356ed58296a45
+  .claude/skills/review-forge/scripts/validate.py: sha256:00961d4fe710152f39acb42d0538f4100f14e471d261664a3d354e45d3e70dc0
+  .claude/skills/slim-agents-md/SKILL.md: sha256:9d2fb99edc82bd4654b394ffb85a4339560ede54277f24ab666ed92fecdbe4e1
+  .claude/skills/slim-agents-md/evals/evals.json: sha256:40f113822d93b337ca4139d0c68b31e865f1c5eff1756206cd4d8641d5cd44c0
+  .claude/skills/slim-agents-md/references/principles.md: sha256:76d89cfb43915dd73232a045593854257142727c693cf4ef610d4b53d914cc92
+  .claude/skills/subtractive-engineering/SKILL.md: sha256:29b6c886ad84b4894f72f764a3acfd9a51cc3d3edc75302601d8b441d6dfbd61
+  .claude/skills/subtractive-engineering/agents/openai.yaml: sha256:2572651893315d373e08f8546731b235035b869532b77cdc8898eecd9d054257
+  .claude/skills/superagent/SKILL.md: sha256:bac8f53ae362147b86c532ddc5cb0236dbf94f6599a42c4b65ac9dfd86d12ee4
+  .claude/skills/superagent/references/backends.md: sha256:35c3e900fb6c6d1d46f5ad2b1e9ec8ee7d0f835bfc41777ac4cfdeb2b7fb4b11
+  .claude/skills/superagent/references/brief_templates.md: sha256:1e18f7d4abfba62d73774c18a8dbd0418405d60f594e612eec3309756f3291d7
+  .claude/skills/superagent/references/watchdog_protocol.md: sha256:795026cfa9d2412bcbbc5db9c59c878372cb72bf78892ced9add9b7fea4e1bfe
+  .claude/skills/superagent/scripts/superagent.py: sha256:7a7fa1dac98f2e451c60a2c16858ca1b93b73359ebd559c0ff915476dbd14409
+  .claude/skills/ui-design/SKILL.md: sha256:0092027883658b9491b24bb634a49b792cd01701a03d2b59ffbb5066cf427995
+  .claude/skills/ui-design/agents/openai.yaml: sha256:aea4eaf83e0ab74b92eae3143ff70e2b681673cd288544e2ac83e39f6bc96d27
+  .codex/agents/impeccable-ui-designer.toml: sha256:2537476ff752ba66dd3883f3c28cd42e2320312a23d6ca8eb4c6154c21a4368a
+  .codex/agents/subtractive-brake.toml: sha256:2a5a3a1729c67fb0d212b6d71e6e4d1c378ca33e597c3c30cb03851cba153e02
