@@ -8,3 +8,6 @@ apm_modules/
 .claude/agents/
 .agents/skills/
 .codex/agents/
+
+# 每台機器各自的 repo 路徑
+repos.local.md
