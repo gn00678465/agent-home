@@ -8,6 +8,9 @@
 
 每條指標格式：`<name> (<一句話職責>) [關鍵字: ...]`。用職責和關鍵字判斷任務屬於哪個 repo。
 
+新增 repo 的步驟見 README.md「新增 repo」。先讀它再動手。
+指標超過 20 個時，改成每個領域一個檔案（如 `repos/billing.md`），本檔只指向這些檔案。
+
 - StatusLine (Claude Code 的自訂狀態列，顯示模型、token、速率限制與 git 資訊) [關鍵字: statusline, 狀態列, token, rate limit]: Clone from https://github.com/gn00678465/StatusLine.git if missing. 先讀它的 AGENTS.md。
 - subs-tracker (Cloudflare Workers 訂閱管理系統，追蹤續約並提醒) [關鍵字: 訂閱, 續約, 提醒, Cloudflare Workers]: Clone from https://github.com/gn00678465/subs-tracker.git if missing. 先讀它的 AGENTS.md。
 - handbrake-agent (用 GitHub Copilot SDK 給影片轉碼參數建議) [關鍵字: HandBrake, 轉碼, 影片, Copilot SDK]: Clone from https://github.com/gn00678465/handbrake-agent.git if missing. 先讀它的 AGENTS.md。
