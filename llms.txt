@@ -1,0 +1,31 @@
+# agent-home
+
+> 個人的 agent 工作入口：共用 skills、agents、AGENTS.md，以及其他 repo 的指標。從這個 repo 啟動 agent。
+
+先讀 AGENTS.md。各 repo 的本機路徑記在 repos.local.md（不進版控，範本是 repos.local.example.md）。
+
+## 入口
+
+- [AGENTS.md](AGENTS.md): agent 指令與 Other Repos 指標
+- [README.md](README.md): 新機器設定、新增 repo、新增 skill 與 agent 的步驟
+
+## Skills（.apm/skills/）
+
+- [done-or-not](.apm/skills/done-or-not/SKILL.md): 完工與進度回報，產出白話判決與實證卷宗
+- [issue-template](.apm/skills/issue-template/SKILL.md): GitHub Issue Forms 模板
+- [pull-request](.apm/skills/pull-request/SKILL.md): 建立與修改 GitHub PR
+- [review-forge](.apm/skills/review-forge/SKILL.md): 多模型程式碼審查工作流
+- [slim-agents-md](.apm/skills/slim-agents-md/SKILL.md): 精簡 AGENTS.md 與 CLAUDE.md
+- [subtractive-engineering](.apm/skills/subtractive-engineering/SKILL.md): 減法工程
+- [superagent](.apm/skills/superagent/SKILL.md): 跨 Claude Code、Codex、Antigravity 的交付編排
+- [ui-design](.apm/skills/ui-design/SKILL.md): UI 設計委派
+
+## Agents（.apm/agents/）
+
+- [impeccable-ui-designer](.apm/agents/impeccable-ui-designer.agent.md)
+- [subtractive-brake](.apm/agents/subtractive-brake.agent.md)
+
+## Optional
+
+- evals/: subtractive 系列的評測案例
+- .claude/、.agents/、.codex/: apm-go install 的產物，不進版控
