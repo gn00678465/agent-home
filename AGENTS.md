@@ -15,6 +15,7 @@
 - subs-tracker (Cloudflare Workers 訂閱管理系統，追蹤續約並提醒) [關鍵字: 訂閱, 續約, 提醒, Cloudflare Workers]: Clone from https://github.com/gn00678465/subs-tracker.git if missing. 先讀它的 AGENTS.md。
 - handbrake-agent (用 GitHub Copilot SDK 給影片轉碼參數建議) [關鍵字: HandBrake, 轉碼, 影片, Copilot SDK]: Clone from https://github.com/gn00678465/handbrake-agent.git if missing. 先讀它的 AGENTS.md。
 - coding-agent-toolkit (只放外部 skills 的 marketplace，Claude Code 與 Codex plugins 集合；自有 skills 在 agent-home) [關鍵字: marketplace, 外部 skills, plugin, apm.yml]: Clone from https://github.com/gn00678465/coding-agent-toolkit.git if missing.
+- dotfiles (個人跨平台環境與工具設定庫，以 chezmoi 管理 shell、Claude、Codex 等配置) [關鍵字: dotfiles, chezmoi, settings, config, 環境設定]: Clone from https://github.com/gn00678465/dotfiles.git if missing. 先讀它的 AGENTS.md。
 
 ## Repo 判定規則
 
