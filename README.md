@@ -6,7 +6,7 @@
 
 | 路徑 | 說明 |
 |---|---|
-| `AGENTS.md` | agent 的入口，列出其他 repo 的指標 |
+| `AGENTS.md` | agent 的入口，引入 `repos.local.md` 並定義 repo 判定規則 |
 | `.apm/skills/` | 共用 skills 的唯一來源 |
 | `.apm/agents/` | 共用 agents，檔名為 `<name>.agent.md` |
 | `evals/` | subtractive 系列 skill 與 agent 的評測案例 |
@@ -46,18 +46,16 @@
 
 ## 新增 repo
 
-1. 在 `AGENTS.md` 的 Other Repos 加一行：
+`AGENTS.md` 不列 repo，只用 `@repos.local.md` 引入。
+
+1. 在每台機器的 `repos.local.md` 加一行，路徑寫該機器的實際位置：
 
    ```text
-   - <name> (<用途>): Clone from <remote> if missing. 先讀它的 AGENTS.md。
+   - <name> (<一句話職責>) [關鍵字: ...] [remote: <url>]: <本機路徑>
    ```
+2. 想讓其他機器共用這個 repo，在 `repos.local.example.md` 加同一行，路徑改成 `~/Desktop/projects/<name>`，再 commit 並推送。
 
-   不要寫本機路徑。
-2. 在 `repos.local.example.md` 加一行範本路徑：`<name>: ~/Desktop/projects/<name>`。
-3. 在每台機器的 `repos.local.md` 加實際路徑。
-4. commit 並推送 `AGENTS.md` 和 `repos.local.example.md`，其他機器 `git pull`。
-
-repo 超過約 20 個時，改成每個領域一個檔案（例如 `repos/billing.md`），`AGENTS.md` 只指向這些檔案。
+條目超過約 20 個時，改成每個領域一個檔案（例如 `repos.local/billing.md`），`repos.local.md` 只用 `@` 引入這些檔案。`repos.local/` 含本機路徑，不進版控。
 
 ## 新增或修改 skill、agent
 
