@@ -4,7 +4,9 @@
 > 給 worker 的檔案路徑一律寫絕對路徑。worker 在獨立 worktree 或沙盒裡組相對路徑容易出錯，進而觸發權限對話框。
 
 > [!NOTE]
-> 報告路徑以 worker 的 prompt 檔為準：`dispatch` 預設為 `stages/<stage>/report-<角色>.md`，也可以用 `--report` 指定。brief 裡要寫報告路徑，就寫同一個。
+> 報告路徑以 worker 的 prompt 檔為準：`dispatch` 預設為 `stages/<stage>/report-<角色>.md`，同一個角色再派時依序是 `report-<角色>-r2.md`、`-r3.md`，路徑印在 `dispatch` 輸出的 `Report:`。也可以用 `--report` 指定一個還不存在的檔案。brief 裡要寫報告路徑，就寫同一個。
+>
+> 日誌依輪次命名：第 1 輪不加前綴（`test.log`），第 n 輪（n ≥ 2）寫 `r<n>_test.log`。`verify-gate` 只看目前這一輪的日誌。
 >
 > 完成標記寫在報告最後一行。worker 寫完報告後，照它的 prompt 執行 `post --kind done --file <報告>`，Router 以這則 post 為完成訊號。標記用於 `verify-gate`；worker 漏發 post 時，`watch` 也靠它代發。
 
@@ -44,13 +46,15 @@ IMPL DONE
 
 ---
 
-## 2. 修正 Brief（`brief_r<n>.md`，`n` ≤ 3）
+## 2. 修正 Brief（`brief_r<n>.md`，`n` 是 2 或 3）
+
+`n` 是 `next-round` 開出的新 round。它依據的是上一輪的裁定 `ruling_r<n-1>.md`。
 
 ```markdown
 # 階段 <NN>-<slug>：第 <n> 輪修正 Brief
 
 - **工作目錄（worktree）**：`<worktree 絕對路徑>`（接續既有分支 `<branch-name>`）
-- **裁定依據**：`<ruling_r<n>.md 絕對路徑>`
+- **裁定依據**：`<ruling_r<n-1>.md 絕對路徑>`
 
 ## 本輪採納需修正項目（僅修下列項目，勿擴張範圍）
 1. **[P1/P2] <問題標題>**
@@ -60,7 +64,7 @@ IMPL DONE
 
 ## 驗證與回報
 - 跑完完整驗證寫入 `<logs 絕對路徑>/r<n>_*.log`（結尾 `exit=<code>`）。
-- 修正報告寫至：`<report_r<n>.md 絕對路徑>`
+- 修正報告寫至：`<report 絕對路徑（dispatch 輸出的 Report:）>`
 - 完成後於最後一行單獨寫上：
 
 FIX R<n> DONE
@@ -113,7 +117,7 @@ FIX R<n> DONE
 | 1 | A | P2 | <摘要> | 採納 | <核對 `file:line` 確認成立> |
 
 ## 下一步決議
-- [ ] 進入第 `<n+1>` 輪修正（`brief_r<n+1>.md`）
-- [ ] 達 3 輪上限 → 停止修補，整合 3 輪報告修訂 `brief.md`，丟棄分支從 base 重做
+- [ ] 進入第 `<n+1>` 輪修正：`next-round --ruling <本檔>`，再寫 `brief_r<n+1>.md`
+- [ ] `next-round` 回 `ROUND_LIMIT`（第 3 輪仍不過）→ 停止修補，整合 3 輪報告修訂 `brief.md`，`reset-stage` 後丟棄分支從 base 重做
 - [ ] 全部通過 → 執行 `verify-gate`、合併、驗證與收尾
 ```

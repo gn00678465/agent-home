@@ -8,7 +8,7 @@ from typing import Any
 from .adaptors import ADAPTORS, ROUTER_ORDER, get_adaptor
 from .adaptors.hc_adaptor import HcAdaptor
 from .screen import probe_result
-from .store import SCRIPT, Repo, default_home, hc_name, home_env_argv, run_cmd
+from .store import SCRIPT, Repo, default_home, hc_name, home_env_argv, run_cmd, runner_argv
 
 
 def detect_router() -> dict[str, Any]:
@@ -56,7 +56,7 @@ def ensure_watcher(repo: Repo, dry_run: bool = False) -> dict[str, Any]:
     name = watcher_name(repo)
     if not dry_run and hc.is_live(name):
         return {"started": False, "reason": "already running", "name": name}
-    argv = [*home_env_argv(), "uv", "run", str(SCRIPT), "watch", "--project", str(repo.project), "--auto-nudge", "--loop"]
+    argv = [*home_env_argv(), *runner_argv(), str(SCRIPT), "watch", "--project", str(repo.project), "--auto-nudge", "--loop"]
     cmd = hc.run_background(name, str(repo.project), argv, notify=False)
     if dry_run:
         return {"started": True, "dry_run": True, "command": cmd}

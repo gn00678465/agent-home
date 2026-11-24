@@ -17,7 +17,7 @@ sys.path.insert(0, str(SCRIPTS))
 
 from sa.adaptors import ADAPTORS, LaunchRequest, get_adaptor  # noqa: E402
 from sa.ade import ensure_watcher, notify  # noqa: E402
-from sa.board import cli_cmd, post_message  # noqa: E402
+from sa.board import cli_cmd, notice_text, post_message  # noqa: E402
 from sa.hooks import stop_decision  # noqa: E402
 from sa.store import Repo, parse_remote_key  # noqa: E402
 from sa.watch import watch_tick  # noqa: E402
@@ -99,9 +99,12 @@ class Board(Base):
 
     def test_worker_commands_prefer_uv_without_cache(self) -> None:
         # A sandboxed worker cannot write uv's cache: uv must skip it, and python3 is the fallback without uv.
-        with mock.patch("sa.board.shutil.which", return_value="/usr/bin/uv"):
+        with mock.patch("sa.store.shutil.which", return_value="/usr/bin/uv"):
             self.assertIn(" uv run --no-cache ", cli_cmd("post", self.repo, "--as", "w1"))
-        with mock.patch("sa.board.shutil.which", return_value=None):
+            post = {"seq": 1, "from": "w1", "to": ["router"], "kind": "done", "text": "ok"}
+            self.assertIn(" uv run --no-cache ", notice_text(self.repo, post, "router"))  # the pushed `read` command
+            self.assertIn("--no-cache", ensure_watcher(self.repo, dry_run=True)["command"])
+        with mock.patch("sa.store.shutil.which", return_value=None):
             cmd = cli_cmd("post", self.repo, "--as", "w1")
         self.assertIn(" python3 ", cmd)
         self.assertNotIn("uv run", cmd)
@@ -164,6 +167,104 @@ class Stage(Base):
         self.assertEqual(self.run_cli("dispatch", "--stage", "s1", "--role", "impl", "--dry-run"), 1)
         self.assertEqual(self.run_cli("reset-stage", "--stage", "s1", "--owner-ack", "ok"), 0)
         self.assertEqual(self.run_cli("dispatch", "--stage", "s1", "--role", "impl", "--dry-run"), 0)
+
+
+class Rounds(Base):
+    def gate(self, report: Path, *extra: str) -> dict:
+        out = Path(self.tmp.name) / "gate.json"
+        self.run_cli("verify-gate", "--stage", "s1", "--report", str(report), "--marker", "IMPL DONE",
+                     "--output", str(out), *extra)
+        return json.loads(out.read_text())
+
+    def log(self, name: str, code: int) -> None:
+        (self.repo.stage_dir("s1") / "logs" / name).write_text(f"...\nexit={code}\n")
+
+    def ruling(self, n: int) -> str:
+        path = self.repo.stage_dir("s1") / f"ruling_r{n}.md"
+        path.write_text("FAIL")
+        return str(path)
+
+    def test_quoted_placeholder_is_not_a_hit(self) -> None:
+        report = self.repo.stage_dir("s1") / "r.md"
+        self.log("test.log", 0)
+        report.write_text("每份 log 結尾都是 `exit=<結束碼>`。\nIMPL DONE\n")
+        self.assertTrue(self.gate(report)["pass"])
+        report.write_text("commit: `<SHA>`\nIMPL DONE\n")  # a span that is only a placeholder is unfilled
+        self.assertEqual(self.gate(report)["checks"][1]["hits"], ["<SHA>"])
+        report.write_text("commit: <SHA>\nIMPL DONE\n")
+        self.assertFalse(self.gate(report)["pass"])
+
+    def test_gate_checks_only_current_round_logs(self) -> None:
+        report = self.repo.stage_dir("s1") / "r.md"
+        report.write_text("IMPL DONE\n")
+        self.log("install.log", 1)
+        self.assertFalse(self.gate(report)["pass"])
+        self.assertEqual(self.run_cli("next-round", "--stage", "s1", "--ruling", self.ruling(1)), 0)
+        res = self.gate(report)
+        self.assertFalse(res["pass"])  # round 2 has no r2_ logs yet
+        self.assertEqual(res["checks"][2]["expected"], "r2_*.log")
+        self.log("r2_install.log", 0)
+        res = self.gate(report)
+        self.assertTrue(res["pass"])
+        self.assertEqual(res["checks"][2]["other_rounds"], ["install.log"])
+        self.assertFalse(self.gate(report, "--round", "1")["pass"])
+
+    def test_round_cap_blocks_fourth_round_until_reset(self) -> None:
+        self.assertEqual(self.run_cli("set-role", "--role", "fix", "--kind", "write", "--confirm"), 0)
+        self.assertEqual(self.run_cli("next-round", "--stage", "s1", "--ruling", "/nonexistent.md"), 1)
+        self.assertEqual(self.run_cli("next-round", "--stage", "s1", "--ruling", self.ruling(1)), 0)
+        self.assertEqual(self.run_cli("next-round", "--stage", "s1", "--ruling", self.ruling(2)), 0)
+        self.assertEqual(self.repo.load_state()["stages"]["s1"]["round"], 3)
+        self.assertEqual(self.run_cli("stage-new", "--stage", "s1", "--goal", "g"), 0)
+        self.assertEqual(self.repo.load_state()["stages"]["s1"]["round"], 3)  # recreating keeps the round
+        self.assertEqual(self.run_cli("next-round", "--stage", "s1", "--ruling", self.ruling(3)), 2)
+        self.assertEqual(self.repo.load_state()["stages"]["s1"]["status"], "round_limit")
+        self.assertEqual(self.run_cli("dispatch", "--stage", "s1", "--role", "fix", "--dry-run"), 1)
+        self.assertEqual(self.run_cli("stage-new", "--stage", "s1", "--goal", "g", "--force"), 1)  # no bypass
+        self.log("test.log", 1)
+        self.assertEqual(self.run_cli("reset-stage", "--stage", "s1", "--reason", "gap"), 0)
+        st = self.repo.load_state()["stages"]["s1"]
+        self.assertEqual((st["round"], st["status"]), (1, "briefing"))
+        # The failed attempt's logs move aside so the redo's round 1 starts clean.
+        self.assertEqual(list((self.repo.stage_dir("s1") / "logs").iterdir()), [])
+        self.assertTrue((self.repo.stage_dir("s1") / "logs-attempt1" / "test.log").is_file())
+        self.assertEqual(self.run_cli("dispatch", "--stage", "s1", "--role", "fix", "--dry-run"), 0)
+
+
+class Redispatch(Base):
+    def dispatch(self, *extra: str) -> tuple[int, dict]:
+        out = Path(self.tmp.name) / "d.json"
+        out.unlink(missing_ok=True)
+        code = self.run_cli("dispatch", "--stage", "s1", "--role", "impl", "--marker", "IMPL DONE",
+                            "--output", str(out), *extra)
+        return code, json.loads(out.read_text()) if out.exists() else {}
+
+    def test_same_role_gets_a_fresh_report(self) -> None:
+        # Real (non-dry-run) dispatch on native: prompt, members and board are written as for any ADE.
+        self.run_cli("set-role", "--role", "impl", "--kind", "write", "--ade", "native", "--confirm")
+        sdir = self.repo.stage_dir("s1")
+        code, d1 = self.dispatch()
+        self.assertEqual(code, 0)
+        r1 = Path(d1["worker"]["report_path"])
+        self.assertEqual(r1, sdir / "report-impl.md")
+        r1.write_text("old\nIMPL DONE\n")
+        post_message(self.repo, "impl-s1", ["router"], "done", "ok", push=False)
+        self.run_cli("close-worker", "--worker", "impl-s1")
+        code, d2 = self.dispatch()
+        self.assertEqual(code, 0)
+        r2 = Path(d2["worker"]["report_path"])
+        self.assertEqual(r2, sdir / "report-impl-r2.md")
+        self.assertIn(str(r2), Path(d2["worker"]["prompt_path"]).read_text())
+        self.assertEqual(r1.read_text(), "old\nIMPL DONE\n")  # the old report is kept
+        # The old report's marker no longer makes watch take the new worker as done.
+        events = [e["event"] for e in self.tick("2026-01-01T00:00:00Z", {})["events"]]
+        self.assertNotIn("MARKER_WITHOUT_POST", events)
+        self.assertEqual(self.repo.load_members()["workers"]["impl-s1"]["status"], "active")
+        # A parallel worker of the same role (--name) must not share a report that is not written yet.
+        code, d3 = self.dispatch("--name", "impl-s1-b")
+        self.assertEqual(Path(d3["worker"]["report_path"]), sdir / "report-impl-r3.md")
+        code, _ = self.dispatch("--name", "impl-s1-c", "--report", str(r1))
+        self.assertEqual(code, 1)  # an explicit report that already exists is refused
 
 
 class Roles(Base):

@@ -13,7 +13,8 @@ from typing import Any
 from .adaptors import ADAPTORS, LaunchRequest, get_adaptor
 from .ade import detect_router, ensure_watcher
 from .board import post_message, worker_instructions
-from .constants import DEFAULT_KINDS, DEFAULT_MAX_STAGE_RESETS, DEFAULT_WATCHDOG, ROLE_NAME_RE, ROUTER
+from .constants import (DEFAULT_KINDS, DEFAULT_MAX_REVIEW_ROUNDS, DEFAULT_MAX_STAGE_RESETS, DEFAULT_WATCHDOG,
+                        ROLE_NAME_RE, ROUND_LIMIT_STATUS, ROUTER)
 from .hooks import write_claude_settings
 from .store import Repo, atomic_write_json, emit, ensure_home_ignored, hc_name, iso_str, run_cmd, utc_now
 
@@ -27,12 +28,12 @@ def cmd_init(args: argparse.Namespace) -> int:
     elif not args.use_defaults:
         # The script cannot ask a person: hand the defaults to the Router, which asks the Owner and reruns.
         payload = {"initialized": False, "error_code": "CONFIG_MISSING", "config_path": str(repo.config),
-                   "defaults_preview": {"kinds": DEFAULT_KINDS, "max_review_rounds": 3,
+                   "defaults_preview": {"kinds": DEFAULT_KINDS, "max_review_rounds": DEFAULT_MAX_REVIEW_ROUNDS,
                                         "max_stage_resets": DEFAULT_MAX_STAGE_RESETS}}
         return emit(args, payload, [f"No config at {repo.config}. Ask the Owner to confirm the write/review kind defaults (ade/cli/model/effort), "
                                     "or rerun with --use-defaults; roles are created per task with `set-role`."], exit_code=3)
     else:
-        cfg = {"version": 3, "repo_key": repo.key, "project_root": str(repo.project), "max_review_rounds": 3,
+        cfg = {"version": 3, "repo_key": repo.key, "project_root": str(repo.project), "max_review_rounds": DEFAULT_MAX_REVIEW_ROUNDS,
                "max_stage_resets": DEFAULT_MAX_STAGE_RESETS, "herdr_space": "router",
                "watchdog": dict(DEFAULT_WATCHDOG), "kinds": json.loads(json.dumps(DEFAULT_KINDS)), "roles": {}}
         config_status = "created_defaults"
@@ -89,6 +90,10 @@ def cmd_dispatch(args: argparse.Namespace) -> int:
     if str(stage_rec.get("status", "")).startswith("halted"):
         return emit(args, {"ok": False, "error_code": "STAGE_HALTED", "stage": args.stage, "halt": stage_rec.get("halt")},
                     [f"Error: stage '{args.stage}' is halted; Owner must rule via `reset-stage --owner-ack`."], exit_code=1)
+    if stage_rec.get("status") == ROUND_LIMIT_STATUS:
+        return emit(args, {"ok": False, "error_code": "ROUND_LIMIT", "stage": args.stage, "round": stage_rec.get("round")},
+                    [f"Error: stage '{args.stage}' used all {stage_rec.get('round')} review rounds; "
+                     "run `reset-stage --reason` and redo from base instead of another round."], exit_code=1)
     try:
         adaptor = get_adaptor(ade)
     except ValueError as exc:
@@ -104,12 +109,20 @@ def cmd_dispatch(args: argparse.Namespace) -> int:
 
     sdir = repo.stage_dir(args.stage)
     brief = Path(args.brief).resolve() if args.brief else Path(stage_rec["brief_path"])
-    report = Path(args.report).resolve() if args.report else sdir / f"report-{args.role}.md"
     if not brief.exists() and not args.dry_run:
         print(f"Error: brief file does not exist: {brief}", file=sys.stderr)
         return 1
-    wid = hc_name(args.name or f"{args.role}-{args.stage}")
     members = repo.load_members()
+    taken = {w.get("report_path") for w in (members.get("workers") or {}).values()}
+    if args.report:
+        report = Path(args.report).resolve()
+        if report.exists() or str(report) in taken:
+            return emit(args, {"ok": False, "error_code": "REPORT_EXISTS", "report": str(report)},
+                        [f"Error: report {report} already exists or belongs to another worker; "
+                         "omit --report to get a fresh numbered path."], exit_code=1)
+    else:
+        report = fresh_report_path(sdir, args.role, taken)
+    wid = hc_name(args.name or f"{args.role}-{args.stage}")
     if wid in (members.get("workers") or {}) and members["workers"][wid].get("status") in ("active", "ready"):
         print(f"Error: worker '{wid}' is still {members['workers'][wid]['status']}; close it or pass --name", file=sys.stderr)
         return 1
@@ -146,8 +159,8 @@ def cmd_dispatch(args: argparse.Namespace) -> int:
 
     if args.dry_run:
         return emit(args, {"ok": True, "dry_run": True, "worker_id": wid, "ade": ade, "cli": cli, "model": model,
-                           "effort": effort, "workdir": str(workdir), "command": command, "native_spawn": native_spawn,
-                           "instructions": instructions}, [f"[dry-run] Would dispatch {wid} via {ade} ({cli})."])
+                           "effort": effort, "workdir": str(workdir), "report_path": str(report), "command": command, "native_spawn": native_spawn,
+                           "instructions": instructions}, [f"[dry-run] Would dispatch {wid} via {ade} ({cli}).", f"Report: {report}"])
 
     backend_ref = None
     if command:
@@ -159,7 +172,7 @@ def cmd_dispatch(args: argparse.Namespace) -> int:
         backend_ref = adaptor.parse_ref(res["stdout"], wid)
 
     now_iso = iso_str(utc_now())
-    record = {"id": wid, "stage": args.stage, "role": args.role, "kind": role_cfg.get("kind"), "stop_hook": stop_hook, "ade": ade, "cli": cli, "model": model, "effort": effort,
+    record = {"id": wid, "stage": args.stage, "round": stage_rec.get("round", 1), "role": args.role, "kind": role_cfg.get("kind"), "stop_hook": stop_hook, "ade": ade, "cli": cli, "model": model, "effort": effort,
               "backend_ref": backend_ref, "workdir": str(workdir), "brief_path": str(brief), "report_path": str(report),
               "prompt_path": str(prompt_file), "expected_marker": args.marker, "watch_logs": [str(Path(p).resolve()) for p in (args.watch_log or [])],
               "status": "active", "started_at": now_iso, "last_progress_at": now_iso, "last_read_seq": 0,
@@ -182,11 +195,25 @@ def cmd_dispatch(args: argparse.Namespace) -> int:
         repo.save_members(members)
     watcher = ensure_watcher(repo) if adaptor.can_probe else {"started": False, "reason": f"{ade} worker is not probed"}
     summary = [f"Dispatched '{wid}' via {ade} (ref={backend_ref}, cli={cli}).", f"Prompt: {prompt_file}",
+               f"Report: {report}",
                f"Watcher: {watcher.get('reason') or ('started ' + str(watcher.get('name')))}"]
     if native_spawn:
         summary.append("native: spawn it now with your subagent tool using native_spawn.prompt from the output.")
     return emit(args, {"ok": True, "worker": record, "command": command, "native_spawn": native_spawn, "watcher": watcher}, summary)
 
+
+
+def fresh_report_path(sdir: Path, role: str, taken: set[str | None]) -> Path:
+    """report-<role>.md, then report-<role>-r2.md, r3...: a redispatch must not inherit the last report.
+
+    An old report already ends with the completion marker, so watch would take the new worker as done at once.
+    """
+    n = 1
+    while True:
+        path = sdir / (f"report-{role}.md" if n == 1 else f"report-{role}-r{n}.md")
+        if not path.exists() and str(path) not in taken:
+            return path
+        n += 1
 
 
 def cmd_post(args: argparse.Namespace) -> int:
@@ -244,7 +271,9 @@ def cmd_status(args: argparse.Namespace) -> int:
                "workers": [{k: w.get(k) for k in ("id", "stage", "role", "ade", "cli", "backend_ref", "status",
                                                   "last_post_seq", "last_progress_at", "alert_count", "last_incident_path")}
                            for w in workers]}
-    return emit(args, payload, [f"'{repo.key}' | stage={payload['active_stage']} | board #{payload['board_head']} | "
+    active = (state.get("stages") or {}).get(payload["active_stage"]) or {}
+    rounds = f" round {active.get('round', 1)}/{cfg.get('max_review_rounds', DEFAULT_MAX_REVIEW_ROUNDS)}" if active else ""
+    return emit(args, payload, [f"'{repo.key}' | stage={payload['active_stage']}{rounds} | board #{payload['board_head']} | "
                                 f"router unread={unread or 'none'}",
                                 f"Workers: active={counts['active']}, ready={counts['ready']}, closed={counts['closed']}"])
 

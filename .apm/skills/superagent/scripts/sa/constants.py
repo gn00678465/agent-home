@@ -59,3 +59,10 @@ DEFAULT_KINDS = {
 }
 
 DEFAULT_MAX_STAGE_RESETS = 2
+
+# Round n = one write pass (impl in round 1, fix after) plus its review; no round past the cap, reset instead.
+DEFAULT_MAX_REVIEW_ROUNDS = 3
+ROUND_LIMIT_STATUS = "round_limit"
+
+# Round 1 logs have no prefix (or r1_); round n >= 2 writes r<n>_*.log, as in the fix brief template.
+ROUND_LOG_RE = re.compile(r"r(\d+)_")
