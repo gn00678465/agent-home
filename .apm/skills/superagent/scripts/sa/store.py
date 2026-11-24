@@ -7,6 +7,7 @@ import contextlib
 import json
 import os
 import re
+import shutil
 import subprocess
 import time
 from datetime import datetime, timezone
@@ -105,6 +106,15 @@ def superagent_home() -> Path:
         raise RuntimeError(f"Cannot locate superagent home: {SCRIPT} is not inside a git repo; set SUPERAGENT_HOME")
     return home
 
+
+
+def runner_argv() -> list[str]:
+    """How workers, hooks and the watcher run this script.
+
+    --no-cache: a sandboxed worker (codex workspace-write) cannot write ~/.cache/uv. Without uv, fall back to
+    python3; the script is stdlib-only.
+    """
+    return ["uv", "run", "--no-cache"] if shutil.which("uv") else ["python3"]
 
 
 def home_env_argv() -> list[str]:

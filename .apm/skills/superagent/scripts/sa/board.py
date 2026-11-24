@@ -3,13 +3,12 @@
 from __future__ import annotations
 
 import re
-import shutil
 from pathlib import Path
 from typing import Any
 
 from .ade import notify
 from .constants import ROUTER, WATCHER
-from .store import SCRIPT, Repo, home_env_argv, iso_str, utc_now
+from .store import SCRIPT, Repo, home_env_argv, iso_str, runner_argv, utc_now
 
 
 def member_endpoint(members: dict[str, Any], name: str) -> tuple[str | None, str | None]:
@@ -22,13 +21,8 @@ def member_endpoint(members: dict[str, Any], name: str) -> tuple[str | None, str
 
 
 def cli_cmd(sub: str, repo: Repo, *rest: str) -> str:
-    """The exact command line a worker or the Router runs; absolute paths so any cwd works.
-
-    --no-cache: a sandboxed worker (codex workspace-write) cannot write ~/.cache/uv. Without uv, fall back to
-    python3; the script is stdlib-only.
-    """
-    runner = ["uv", "run", "--no-cache"] if shutil.which("uv") else ["python3"]
-    parts = [*home_env_argv(), *runner, str(SCRIPT), sub, "--project", str(repo.project), *rest]
+    """The exact command line a worker or the Router runs; absolute paths so any cwd works."""
+    parts = [*home_env_argv(), *runner_argv(), str(SCRIPT), sub, "--project", str(repo.project), *rest]
     return " ".join(_shq(p) for p in parts)
 
 

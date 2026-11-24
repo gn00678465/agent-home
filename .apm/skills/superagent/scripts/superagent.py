@@ -19,7 +19,7 @@ from sa.adaptors import ADAPTORS
 from sa.commands import cmd_close_worker, cmd_dispatch, cmd_init, cmd_post, cmd_read, cmd_set_role, cmd_status
 from sa.constants import CLI_CHOICES, EFFORT_CHOICES, POST_KINDS, ROLE_KINDS
 from sa.hooks import cmd_hook_stop
-from sa.stage import cmd_reset_stage, cmd_stage_new, cmd_verify_gate
+from sa.stage import cmd_next_round, cmd_reset_stage, cmd_stage_new, cmd_verify_gate
 from sa.watch import cmd_diagnose, cmd_watch, cmd_watch_start
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -59,7 +59,7 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--allow-cli-default", action="store_true")
     sp.add_argument("--name", help="Worker id (default <role>-<stage>)")
     sp.add_argument("--brief", help="Default: the stage brief.md")
-    sp.add_argument("--report", help="Default: <stage>/report-<role>.md")
+    sp.add_argument("--report", help="Default: <stage>/report-<role>.md, then report-<role>-r2.md... (never reused)")
     sp.add_argument("--marker", help="Fallback completion marker in the report ('|' for alternatives)")
     sp.add_argument("--worktree")
     sp.add_argument("--create-worktree-branch")
@@ -103,7 +103,12 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--marker", required=True)
     sp.add_argument("--commit")
     sp.add_argument("--logs-dir")
+    sp.add_argument("--round", type=int, help="Check this round's logs (default: the stage's current round)")
     sp.add_argument("--allow-empty-logs", action="store_true")
+
+    sp = add("next-round", cmd_next_round, "Open the next fix round after a failed review; refuse past max_review_rounds")
+    sp.add_argument("--stage", required=True)
+    sp.add_argument("--ruling", required=True, help="The ruling_r<n>.md that failed this round")
 
     add("status", cmd_status, "Summarize stages, workers, board head and Router unread")
 
