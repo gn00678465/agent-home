@@ -12,3 +12,7 @@ apm_modules/
 # 每台機器各自的 repo 路徑
 repos.local.md
 repos.local/
+
+# superagent 的 board 與進度紀錄
+.superagent/
+__pycache__/
