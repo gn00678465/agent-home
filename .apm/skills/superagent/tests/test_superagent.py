@@ -366,5 +366,433 @@ class Adaptors(unittest.TestCase):
             get_adaptor("tmux")
 
 
+class RulingsAndObjections(Base):
+    def gate(self, report: Path, marker: str = "IMPL DONE", *extra: str) -> tuple[int, dict]:
+        out = Path(self.tmp.name) / "gate.json"
+        out.unlink(missing_ok=True)
+        code = self.run_cli("verify-gate", "--stage", "s1", "--report", str(report), "--marker", marker,
+                            "--output", str(out), *extra)
+        return code, json.loads(out.read_text())
+
+    def check_by_name(self, payload: dict, name: str) -> dict:
+        return next(c for c in payload["checks"] if c["name"] == name)
+
+    def make_commit(self) -> str:
+        f = self.proj / "a.txt"
+        f.write_text("hi\n")
+        subprocess.run(["git", "-C", str(self.proj), "add", "a.txt"], check=True)
+        subprocess.run(
+            ["git", "-C", str(self.proj), "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "init"],
+            check=True,
+        )
+        return subprocess.run(
+            ["git", "-C", str(self.proj), "rev-parse", "HEAD"], check=True, capture_output=True, text=True
+        ).stdout.strip()
+
+    def test_next_round_posts_ruling_and_dispatch_injects_into_review_prompt(self) -> None:
+        self.add_worker("active-w")
+        self.add_worker("ready-w")
+        with self.repo.lock():
+            m = self.repo.load_members()
+            m["workers"]["ready-w"]["status"] = "ready"
+            self.repo.save_members(m)
+        ruling_path = self.repo.stage_dir("s1") / "ruling_r1.md"
+        ruling_path.write_text("# Ruling R1\n駁回 P2\n")
+        out = Path(self.tmp.name) / "nr.json"
+        self.assertEqual(self.run_cli("next-round", "--stage", "s1", "--ruling", str(ruling_path), "--output", str(out)), 0)
+        nr = json.loads(out.read_text())
+        post = self.repo.read_board()[-1]
+        self.assertEqual(post["seq"], nr["ruling_post_seq"])
+        self.assertEqual((post["kind"], post["stage"], post["round"], post["attempt"]), ("ruling", "s1", 1, 1))
+        # Pushes only to active stage workers, not ready workers from the completed round.
+        self.assertEqual(post["to"], ["active-w"])
+        self.assertEqual(self.repo.load_members()["workers"]["ready-w"]["status"], "ready")
+
+        self.run_cli("set-role", "--role", "rev", "--kind", "review", "--ade", "native", "--confirm")
+        dout = Path(self.tmp.name) / "d.json"
+        self.assertEqual(self.run_cli("dispatch", "--stage", "s1", "--role", "rev", "--dry-run", "--output", str(dout)), 0)
+        d = json.loads(dout.read_text())
+        self.assertIn(str(ruling_path.resolve()), d["instructions"])
+        self.assertIn("逐條核對", d["instructions"])
+        self.assertIn("--kind objection", d["instructions"])
+
+    def test_objection_blocks_gate_until_reply_to_and_escalation_requires_owner_ack(self) -> None:
+        self.add_worker("w1")
+        self.add_worker("w2")
+        report = self.repo.stage_dir("s1") / "report.md"
+        report.write_text("ok\nIMPL DONE\n")
+        (self.repo.stage_dir("s1") / "logs" / "test.log").write_text("ok\nexit=0\n")
+
+        # Router posts a ruling (#1), w1 asks an unrelated question (#2), w1 objects to #1 (#3).
+        r_res = post_message(self.repo, "router", ["w1"], "ruling", "駁回 P2", stage="s1", push=False)
+        rseq = r_res["post"]["seq"]
+        ask_res = post_message(self.repo, "w1", ["router"], "ask", "路徑?", push=False)
+        obj_res = post_message(self.repo, "w1", ["router"], "objection", "P2 成立", reply_to=rseq, push=False)
+        oseq = obj_res["post"]["seq"]
+
+        # Answering the unrelated ask must NOT resolve the objection.
+        post_message(self.repo, "router", ["w1"], "answer", "用絕對路徑", reply_to=ask_res["post"]["seq"], push=False)
+        code, res = self.gate(report)
+        self.assertEqual(code, 1)
+        self.assertFalse(self.check_by_name(res, "unresolved_objections")["pass"])
+
+        # Router resolves first-level objection with --reply-to oseq.
+        ans_out = Path(self.tmp.name) / "ans.json"
+        self.assertEqual(
+            self.run_cli("post", "--as", "router", "--to", "w1", "--kind", "answer", "--reply-to", str(oseq),
+                         "--text", "維持原判：已核對", "--no-push", "--output", str(ans_out)),
+            0,
+        )
+        ans_seq = json.loads(ans_out.read_text())["post"]["seq"]
+        code, res = self.gate(report)
+        self.assertEqual(code, 0)
+
+        # Re-objection (replying to Router's answer) escalates: Router cannot self-close without --owner-ack.
+        reobj_res = post_message(self.repo, "w1", ["router"], "objection", "再異議：仍會失效", reply_to=ans_seq, push=False)
+        reseq = reobj_res["post"]["seq"]
+        err_out = Path(self.tmp.name) / "err.json"
+        self.assertEqual(
+            self.run_cli("post", "--as", "router", "--to", "w1", "--kind", "answer", "--reply-to", str(reseq),
+                         "--text", "我還是不同意", "--no-push", "--output", str(err_out)),
+            2,
+        )
+        self.assertEqual(json.loads(err_out.read_text())["error_code"], "ESCALATION_REQUIRED")
+        code, res = self.gate(report)
+        self.assertEqual(code, 1)
+        self.assertTrue(self.check_by_name(res, "unresolved_objections")["unresolved"][0]["requires_owner_ack"])
+
+        # Owner ruling unlocks the re-objection.
+        self.assertEqual(
+            self.run_cli("post", "--as", "router", "--to", "w1", "--kind", "ruling", "--reply-to", str(reseq),
+                         "--owner-ack", "Owner 裁定改用 monotonic clock", "--text", "依 Owner 裁定採納", "--no-push"),
+            0,
+        )
+        code, _ = self.gate(report)
+        self.assertEqual(code, 0)
+
+        # Multi-worker objection on a new ruling (#R2): 2 distinct workers objecting requires --owner-ack.
+        r2_seq = post_message(self.repo, "router", ["w1", "w2"], "ruling", "跳過驗證", stage="s1", push=False)["post"]["seq"]
+        o1 = post_message(self.repo, "w1", ["router"], "objection", "不安全", reply_to=r2_seq, push=False)["post"]["seq"]
+        post_message(self.repo, "w2", ["router"], "objection", "我也不贊成", reply_to=r2_seq, push=False)
+        self.assertEqual(
+            self.run_cli("post", "--as", "router", "--to", "w1", "--kind", "answer", "--reply-to", str(o1),
+                         "--text", "照做", "--no-push"),
+            2,
+        )
+        # One Owner ruling targeting the shared ruling r2_seq resolves both workers' objections.
+        self.assertEqual(
+            self.run_cli("post", "--as", "router", "--to", "w1,w2", "--kind", "ruling", "--reply-to", str(r2_seq),
+                         "--owner-ack", "Owner 裁定保留驗證", "--text", "保留驗證", "--no-push"),
+            0,
+        )
+        code, _ = self.gate(report)
+        self.assertEqual(code, 0)
+
+    def test_reset_stage_and_owner_ack_isolate_attempts(self) -> None:
+        self.add_worker("w1")
+        report = self.repo.stage_dir("s1") / "report.md"
+        report.write_text("ok\nIMPL DONE\n")
+        (self.repo.stage_dir("s1") / "logs" / "test.log").write_text("ok\nexit=0\n")
+        post_message(self.repo, "w1", ["router"], "objection", "舊 attempt 的異議", push=False)
+        self.assertEqual(self.gate(report)[0], 1)
+
+        # Resetting increments attempt to 2; old attempt's objection must not block attempt 2.
+        self.assertEqual(self.run_cli("reset-stage", "--stage", "s1", "--reason", "brief gap"), 0)
+        self.assertEqual(self.repo.load_state()["stages"]["s1"]["attempt"], 2)
+        (self.repo.stage_dir("s1") / "logs" / "test.log").write_text("ok\nexit=0\n")
+        self.assertEqual(self.gate(report)[0], 0)
+
+        # Exhaust reset cap and resume with --owner-ack: attempt must keep increasing (never reset back to 1).
+        self.assertEqual(self.run_cli("reset-stage", "--stage", "s1", "--reason", "gap2"), 0)
+        self.assertEqual(self.run_cli("reset-stage", "--stage", "s1", "--reason", "gap3"), 2)
+        self.assertEqual(self.run_cli("reset-stage", "--stage", "s1", "--owner-ack", "redo"), 0)
+        st = self.repo.load_state()["stages"]["s1"]
+        self.assertEqual((st["reset_count"], st["attempt"]), (0, 4))
+        (self.repo.stage_dir("s1") / "logs" / "test.log").write_text("ok\nexit=0\n")
+        self.assertEqual(self.gate(report)[0], 0)
+
+    def test_fail_to_pass_ruling_reactivates_reviewer_and_guards_merge(self) -> None:
+        sha = self.make_commit()
+        self.run_cli("set-role", "--role", "rev", "--kind", "review", "--ade", "native", "--confirm")
+        self.add_worker("rev-s1", ade="hc", marker="VERDICT: PASS|VERDICT: FAIL")
+        with self.repo.lock():
+            m = self.repo.load_members()
+            m["workers"]["rev-s1"].update(kind="review", round=1, attempt=1)
+            self.repo.save_members(m)
+        rev_report = Path(self.repo.load_members()["workers"]["rev-s1"]["report_path"])
+        rev_report.write_text("P2 issue\nVERDICT: FAIL\n")
+        self.assertEqual(
+            self.run_cli("post", "--as", "rev-s1", "--to", "router", "--kind", "done", "--file", str(rev_report), "--no-push"),
+            0,
+        )
+        self.assertEqual(self.repo.load_members()["workers"]["rev-s1"]["status"], "ready")
+
+        impl_report = self.repo.stage_dir("s1") / "report-impl.md"
+        impl_report.write_text("done\nIMPL DONE\n")
+        (self.repo.stage_dir("s1") / "logs" / "test.log").write_text("ok\nexit=0\n")
+
+        # Checking the review report itself without --commit must pass (not blocked by unaddressed_fail_reviews).
+        code, _ = self.gate(rev_report, "VERDICT: PASS|VERDICT: FAIL", "--allow-empty-logs")
+        self.assertEqual(code, 0)
+
+        # Merge gate (--commit) fails when a current-round FAIL review has no ruling.
+        code, res = self.gate(impl_report, "IMPL DONE", "--commit", sha)
+        self.assertEqual(code, 1)
+        self.assertFalse(self.check_by_name(res, "unaddressed_fail_reviews")["pass"])
+
+        # Router sends targeted ruling to ready reviewer -> reactivates it and blocks gate on pending_ruling_acks.
+        rout = Path(self.tmp.name) / "r.json"
+        self.assertEqual(
+            self.run_cli("post", "--as", "router", "--to", "rev-s1", "--kind", "ruling",
+                         "--text", "核對後 P2 不成立", "--no-push", "--output", str(rout)),
+            0,
+        )
+        rseq = json.loads(rout.read_text())["post"]["seq"]
+        self.assertEqual(self.repo.load_members()["workers"]["rev-s1"]["status"], "active")
+        code, res = self.gate(impl_report, "IMPL DONE", "--commit", sha)
+        self.assertEqual(code, 1)
+        self.assertTrue(self.check_by_name(res, "unaddressed_fail_reviews")["pass"])
+        self.assertFalse(self.check_by_name(res, "pending_ruling_acks")["pass"])
+
+        # Stop hook blocks rev-s1 first to read, then to ack or object.
+        with self.repo.lock():
+            self.assertIn("read", stop_decision(self.repo, "rev-s1") or "")
+        self.run_cli("read", "--as", "rev-s1")
+        with self.repo.lock():
+            reason = stop_decision(self.repo, "rev-s1") or ""
+            self.assertIn(f"--reply-to {rseq}", reason)
+
+        # Reviewer confirms ruling -> status returns to ready and merge verify-gate passes.
+        self.assertEqual(
+            self.run_cli("post", "--as", "rev-s1", "--to", "router", "--kind", "note",
+                         "--reply-to", str(rseq), "--text", "同意裁定", "--no-push"),
+            0,
+        )
+        self.assertEqual(self.repo.load_members()["workers"]["rev-s1"]["status"], "ready")
+        code, _ = self.gate(impl_report, "IMPL DONE", "--commit", sha)
+        self.assertEqual(code, 0)
+
+    def test_unpushable_native_reviewer_ack_warns_and_unlocks_with_owner_ack(self) -> None:
+        self.add_worker("rev-nat", ade="native", marker="VERDICT: PASS|VERDICT: FAIL")
+        with self.repo.lock():
+            m = self.repo.load_members()
+            m["workers"]["rev-nat"].update(status="ready", kind="review", done_seq=1)
+            self.repo.save_members(m)
+        rout = Path(self.tmp.name) / "rn.json"
+        self.assertEqual(
+            self.run_cli("post", "--as", "router", "--to", "rev-nat", "--kind", "ruling",
+                         "--text", "駁回 P2", "--no-push", "--output", str(rout)),
+            0,
+        )
+        rpayload = json.loads(rout.read_text())
+        self.assertEqual(rpayload["unpushable_ack_workers"], ["rev-nat"])
+        rseq = rpayload["post"]["seq"]
+        report = self.repo.stage_dir("s1") / "report.md"
+        report.write_text("ok\nIMPL DONE\n")
+        (self.repo.stage_dir("s1") / "logs" / "test.log").write_text("ok\nexit=0\n")
+        self.assertEqual(self.gate(report)[0], 1)
+        self.assertEqual(
+            self.run_cli("post", "--as", "router", "--to", "rev-nat", "--kind", "ruling",
+                         "--reply-to", str(rseq), "--owner-ack", "Owner 確認可合併", "--no-push"),
+            0,
+        )
+        self.assertEqual(self.gate(report)[0], 0)
+
+    def test_watch_skips_marker_on_reactivated_reviewer_and_all_ruling_skips_ready(self) -> None:
+        self.add_worker("rev-s1", ade="hc", marker="VERDICT: PASS|VERDICT: FAIL")
+        self.add_worker("impl-s1", ade="hc", marker="IMPL DONE")
+        with self.repo.lock():
+            m = self.repo.load_members()
+            m["workers"]["rev-s1"].update(kind="review", round=1, attempt=1)
+            m["workers"]["impl-s1"].update(status="ready", done_seq=1)
+            self.repo.save_members(m)
+        rev_report = Path(self.repo.load_members()["workers"]["rev-s1"]["report_path"])
+        rev_report.write_text("P2\nVERDICT: FAIL\n")
+        self.assertEqual(
+            self.run_cli("post", "--as", "rev-s1", "--to", "router", "--kind", "done", "--file", str(rev_report), "--no-push"),
+            0,
+        )
+
+        # Broadcast ruling (--to all) must not wake up already-ready workers or add require_ack_from.
+        self.assertEqual(
+            self.run_cli("post", "--as", "router", "--to", "all", "--stage", "s1", "--kind", "ruling",
+                         "--text", "設計補充", "--no-push"),
+            0,
+        )
+        bcast = self.repo.read_board()[-1]
+        self.assertEqual(bcast["to"], [])
+        self.assertNotIn("require_ack_from", bcast)
+        self.assertEqual(self.repo.load_members()["workers"]["impl-s1"]["status"], "ready")
+
+        # Targeted ruling reactivates rev-s1; watch_tick must NOT misread the old report marker as MARKER_WITHOUT_POST.
+        self.assertEqual(
+            self.run_cli("post", "--as", "router", "--to", "rev-s1", "--kind", "ruling", "--text", "駁回 P2", "--no-push"),
+            0,
+        )
+        events = self.tick("2026-01-01T00:00:00Z", {"rev-s1": {"agent_status": "working", "screen_text": "reading"}})["events"]
+        self.assertNotIn("MARKER_WITHOUT_POST", [e["event"] for e in events])
+        self.assertEqual(self.repo.load_members()["workers"]["rev-s1"]["status"], "active")
+
+        # Closing a FAIL reviewer cannot bypass pending_ruling_acks.
+        self.add_worker("rev-closed", ade="hc", marker="VERDICT: PASS|VERDICT: FAIL")
+        with self.repo.lock():
+            m = self.repo.load_members()
+            m["workers"]["rev-closed"].update(kind="review", status="closed", done_seq=1)
+            self.repo.save_members(m)
+        cout = Path(self.tmp.name) / "rc.json"
+        self.assertEqual(
+            self.run_cli("post", "--as", "router", "--to", "rev-closed", "--kind", "ruling",
+                         "--text", "駁回", "--no-push", "--output", str(cout)),
+            0,
+        )
+        cp = json.loads(cout.read_text())
+        self.assertEqual(cp["post"]["require_ack_from"], ["rev-closed"])
+        self.assertEqual(cp["unpushable_ack_workers"], ["rev-closed"])
+
+    def test_first_objection_to_ask_answer_is_not_re_objection(self) -> None:
+        self.add_worker("w1")
+        ask_seq = post_message(self.repo, "w1", ["router"], "ask", "要用 A 還是 B？", push=False)["post"]["seq"]
+        ans_seq = post_message(self.repo, "router", ["w1"], "answer", "用 A", reply_to=ask_seq, push=False)["post"]["seq"]
+        obj_seq = post_message(self.repo, "w1", ["router"], "objection", "A 會破壞既有契約", reply_to=ans_seq, push=False)["post"]["seq"]
+
+        # First objection against a normal ask-answer must be resolvable by Router without --owner-ack.
+        ans2_out = Path(self.tmp.name) / "ans2.json"
+        self.assertEqual(
+            self.run_cli("post", "--as", "router", "--to", "w1", "--kind", "answer",
+                         "--reply-to", str(obj_seq), "--text", "已核對，維持 A 並補遷移", "--no-push", "--output", str(ans2_out)),
+            0,
+        )
+        ans2_seq = json.loads(ans2_out.read_text())["post"]["seq"]
+
+        # Only objecting again to Router's answer-to-objection escalates as re_objection.
+        reobj_seq = post_message(self.repo, "w1", ["router"], "objection", "再異議", reply_to=ans2_seq, push=False)["post"]["seq"]
+        self.assertEqual(
+            self.run_cli("post", "--as", "router", "--to", "w1", "--kind", "answer",
+                         "--reply-to", str(reobj_seq), "--text", "維持原判", "--no-push"),
+            2,
+        )
+
+    def test_unrelated_owner_ack_ruling_does_not_clear_fail_review(self) -> None:
+        sha = self.make_commit()
+        self.add_worker("impl-s1", ade="hc", marker="IMPL DONE")
+        self.add_worker("rev-s1", ade="hc", marker="VERDICT: PASS|VERDICT: FAIL")
+        with self.repo.lock():
+            m = self.repo.load_members()
+            m["workers"]["rev-s1"].update(kind="review", round=1, attempt=1)
+            self.repo.save_members(m)
+        rev_report = Path(self.repo.load_members()["workers"]["rev-s1"]["report_path"])
+        rev_report.write_text("P1 issue\nVERDICT: FAIL\n")
+        self.assertEqual(
+            self.run_cli("post", "--as", "rev-s1", "--to", "router", "--kind", "done", "--file", str(rev_report), "--no-push"),
+            0,
+        )
+        rev_done_seq = self.repo.load_members()["workers"]["rev-s1"]["done_seq"]
+
+        impl_report = self.repo.stage_dir("s1") / "report-impl.md"
+        impl_report.write_text("ok\nIMPL DONE\n")
+        (self.repo.stage_dir("s1") / "logs" / "test.log").write_text("ok\nexit=0\n")
+
+        # An unrelated owner_ack ruling sent to impl-s1 must NOT clear rev-s1's FAIL review.
+        self.assertEqual(
+            self.run_cli("post", "--as", "router", "--to", "impl-s1", "--kind", "ruling",
+                         "--owner-ack", "Owner: 無關裁定", "--no-push"),
+            0,
+        )
+        code, res = self.gate(impl_report, "IMPL DONE", "--commit", sha)
+        self.assertEqual(code, 1)
+        self.assertFalse(self.check_by_name(res, "unaddressed_fail_reviews")["pass"])
+
+        # An owner_ack ruling explicitly replying to rev-s1's done (or targeting rev-s1) DOES address it.
+        self.assertEqual(
+            self.run_cli("post", "--as", "router", "--to", "rev-s1", "--kind", "ruling",
+                         "--reply-to", str(rev_done_seq), "--owner-ack", "Owner: 接受已知限制可合併", "--no-push"),
+            0,
+        )
+        code, res = self.gate(impl_report, "IMPL DONE", "--commit", sha)
+        self.assertEqual(code, 0)
+        self.assertTrue(self.check_by_name(res, "unaddressed_fail_reviews")["pass"])
+
+
+class LocalDoneCheck(Base):
+    def test_review_worker_can_post_fail_done_even_when_stage_logs_failed(self) -> None:
+        self.add_worker("rev-s1", ade="native", marker="VERDICT: PASS|VERDICT: FAIL")
+        with self.repo.lock():
+            m = self.repo.load_members()
+            m["workers"]["rev-s1"]["kind"] = "review"
+            self.repo.save_members(m)
+        (self.repo.stage_dir("s1") / "logs" / "test.log").write_text("FAIL\nexit=1\n")
+        rev_report = Path(self.repo.load_members()["workers"]["rev-s1"]["report_path"])
+        rev_report.write_text("tests failed\nVERDICT: FAIL\n")
+        self.assertEqual(
+            self.run_cli("post", "--as", "rev-s1", "--to", "router", "--kind", "done", "--file", str(rev_report), "--no-push"),
+            0,
+        )
+        self.assertEqual(self.repo.load_members()["workers"]["rev-s1"]["status"], "ready")
+
+        # Review workers still get marker and placeholder checks locally.
+        self.add_worker("rev-bad", ade="native", marker="VERDICT: PASS|VERDICT: FAIL")
+        with self.repo.lock():
+            m = self.repo.load_members()
+            m["workers"]["rev-bad"]["kind"] = "review"
+            self.repo.save_members(m)
+        bad_report = Path(self.repo.load_members()["workers"]["rev-bad"]["report_path"])
+        bad_report.write_text("commit <SHA>\nVERDICT: FAIL\n")
+        self.assertEqual(
+            self.run_cli("post", "--as", "rev-bad", "--to", "router", "--kind", "done", "--file", str(bad_report), "--no-push"),
+            1,
+        )
+
+    def test_done_precheck_blocks_bad_marker_placeholders_and_logs_but_allows_empty_logs(self) -> None:
+        self.add_worker("w1", marker="IMPL DONE")
+        report = Path(self.repo.load_members()["workers"]["w1"]["report_path"])
+
+        # Missing marker -> rejected locally, nothing posted, status stays active.
+        report.write_text("finished without marker\n")
+        out = Path(self.tmp.name) / "p.json"
+        self.assertEqual(
+            self.run_cli("post", "--as", "w1", "--to", "router", "--kind", "done", "--file", str(report),
+                         "--no-push", "--output", str(out)),
+            1,
+        )
+        self.assertEqual(json.loads(out.read_text())["error_code"], "LOCAL_CHECK_FAILED")
+        self.assertEqual(self.repo.read_board(), [])
+        self.assertEqual(self.repo.load_members()["workers"]["w1"]["status"], "active")
+
+        # Unfilled placeholder -> rejected locally.
+        report.write_text("commit: <SHA>\nIMPL DONE\n")
+        self.assertEqual(
+            self.run_cli("post", "--as", "w1", "--to", "router", "--kind", "done", "--file", str(report), "--no-push"),
+            1,
+        )
+
+        # Broken log in current round -> rejected locally.
+        report.write_text("commit: abc123\nIMPL DONE\n")
+        logf = self.repo.stage_dir("s1") / "logs" / "test.log"
+        logf.write_text("ran tests without exit line\n")
+        self.assertEqual(
+            self.run_cli("post", "--as", "w1", "--to", "router", "--kind", "done", "--file", str(report), "--no-push"),
+            1,
+        )
+
+        # --skip-check escape hatch still lets a worker post when needed.
+        self.assertEqual(
+            self.run_cli("post", "--as", "w1", "--to", "router", "--kind", "done", "--file", str(report),
+                         "--skip-check", "--no-push"),
+            0,
+        )
+        self.assertEqual(len(self.repo.read_board()), 1)
+
+        # Empty logs directory (e.g. brief or static review worker) passes local check.
+        logf.unlink()
+        self.add_worker("brief-w", marker="BRIEF DONE")
+        breport = Path(self.repo.load_members()["workers"]["brief-w"]["report_path"])
+        breport.write_text("all set\nBRIEF DONE\n")
+        self.assertEqual(
+            self.run_cli("post", "--as", "brief-w", "--to", "router", "--kind", "done", "--file", str(breport), "--no-push"),
+            0,
+        )
+        self.assertEqual(self.repo.load_members()["workers"]["brief-w"]["status"], "ready")
+
+
 if __name__ == "__main__":
     unittest.main()

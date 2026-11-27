@@ -12,10 +12,11 @@ from typing import Any
 
 from .adaptors import ADAPTORS, LaunchRequest, get_adaptor
 from .ade import detect_router, ensure_watcher
-from .board import post_message, worker_instructions
+from .board import EscalationRequiredError, post_message, stage_rulings, worker_instructions
 from .constants import (DEFAULT_KINDS, DEFAULT_MAX_REVIEW_ROUNDS, DEFAULT_MAX_STAGE_RESETS, DEFAULT_WATCHDOG,
                         ROLE_NAME_RE, ROUND_LIMIT_STATUS, ROUTER)
 from .hooks import write_claude_settings
+from .stage import local_done_check
 from .store import Repo, atomic_write_json, emit, ensure_home_ignored, hc_name, iso_str, run_cmd, utc_now
 
 
@@ -138,7 +139,12 @@ def cmd_dispatch(args: argparse.Namespace) -> int:
             return emit(args, {"ok": False, "error_code": "WORKTREE_ERROR", "stderr": wt["stderr"]},
                         [f"Failed to create worktree: {wt['stderr'].strip()}"], exit_code=1)
 
-    instructions = worker_instructions(repo, wid, args.role, brief, report)
+    attempt = int(stage_rec.get("attempt", 1))
+    prior_rulings = stage_rulings(repo.read_board(), stage_rec, args.stage, attempt)
+    instructions = worker_instructions(
+        repo, wid, args.role, brief, report,
+        role_kind=role_cfg.get("kind", "write"), prior_rulings=prior_rulings,
+    )
     prompt_file = sdir / f"{wid}.prompt.md"
     if not args.dry_run:
         prompt_file.parent.mkdir(parents=True, exist_ok=True)
@@ -160,7 +166,8 @@ def cmd_dispatch(args: argparse.Namespace) -> int:
     if args.dry_run:
         return emit(args, {"ok": True, "dry_run": True, "worker_id": wid, "ade": ade, "cli": cli, "model": model,
                            "effort": effort, "workdir": str(workdir), "report_path": str(report), "command": command, "native_spawn": native_spawn,
-                           "instructions": instructions}, [f"[dry-run] Would dispatch {wid} via {ade} ({cli}).", f"Report: {report}"])
+                           "prior_rulings": prior_rulings, "instructions": instructions},
+                    [f"[dry-run] Would dispatch {wid} via {ade} ({cli}).", f"Report: {report}"])
 
     backend_ref = None
     if command:
@@ -172,7 +179,7 @@ def cmd_dispatch(args: argparse.Namespace) -> int:
         backend_ref = adaptor.parse_ref(res["stdout"], wid)
 
     now_iso = iso_str(utc_now())
-    record = {"id": wid, "stage": args.stage, "round": stage_rec.get("round", 1), "role": args.role, "kind": role_cfg.get("kind"), "stop_hook": stop_hook, "ade": ade, "cli": cli, "model": model, "effort": effort,
+    record = {"id": wid, "stage": args.stage, "round": stage_rec.get("round", 1), "attempt": attempt, "role": args.role, "kind": role_cfg.get("kind"), "stop_hook": stop_hook, "ade": ade, "cli": cli, "model": model, "effort": effort,
               "backend_ref": backend_ref, "workdir": str(workdir), "brief_path": str(brief), "report_path": str(report),
               "prompt_path": str(prompt_file), "expected_marker": args.marker, "watch_logs": [str(Path(p).resolve()) for p in (args.watch_log or [])],
               "status": "active", "started_at": now_iso, "last_progress_at": now_iso, "last_read_seq": 0,
@@ -187,7 +194,8 @@ def cmd_dispatch(args: argparse.Namespace) -> int:
         state["stages"][args.stage]["status"] = f"running:{args.role}"
         repo.save_state(state)
     # The worker already has its instructions; this post is the board's record of the hand-off, so no push.
-    brief_post = post_message(repo, ROUTER, [wid], "brief", f"{args.role} 交辦：{brief}（報告：{report}）", push=False)
+    brief_post = post_message(repo, ROUTER, [wid], "brief", f"{args.role} 交辦：{brief}（報告：{report}）",
+                              stage=args.stage, push=False)
     # The worker's cursor starts past its own brief, as in swarm.
     with repo.lock():
         members = repo.load_members()
@@ -218,19 +226,50 @@ def fresh_report_path(sdir: Path, role: str, taken: set[str | None]) -> Path:
 
 def cmd_post(args: argparse.Namespace) -> int:
     repo = Repo(args.project)
-    text = Path(args.file).read_text(encoding="utf-8") if args.file else (args.text or "")
+    report_file = Path(args.file).resolve() if args.file else None
+    text = report_file.read_text(encoding="utf-8") if report_file else (args.text or getattr(args, "owner_ack", None) or "")
     if not text.strip():
         print("Error: empty post; give --text or --file", file=sys.stderr)
         return 1
+    if args.kind == "done" and not getattr(args, "skip_check", False):
+        w = (repo.load_members().get("workers") or {}).get(args.as_)
+        if w is not None:
+            checks = local_done_check(repo, w, text, report_file)
+            if not all(c["pass"] for c in checks):
+                lines = [f"Local done check for '{args.as_}' FAIL (post NOT sent; fix and retry, or pass --skip-check):"]
+                lines += [f"  - {c['name']}: {'ok' if c['pass'] else 'FAIL'}" for c in checks]
+                return emit(args, {"ok": False, "error_code": "LOCAL_CHECK_FAILED", "worker_id": args.as_, "checks": checks},
+                            lines, exit_code=1)
     to = [t.strip() for t in args.to.split(",") if t.strip()]
-    extra = {"file": str(Path(args.file).resolve())} if args.file else None
-    res = post_message(repo, args.as_, to, args.kind, text, extra=extra, push=not args.no_push, dry_run=args.dry_run)
+    extra = {"file": str(report_file)} if report_file else None
+    try:
+        res = post_message(
+            repo, args.as_, to, args.kind, text,
+            extra=extra, stage=getattr(args, "stage", None), reply_to=getattr(args, "reply_to", None),
+            owner_ack=getattr(args, "owner_ack", None), push=not args.no_push, dry_run=args.dry_run,
+        )
+    except EscalationRequiredError as exc:
+        return emit(args, {"ok": False, "error_code": "ESCALATION_REQUIRED", "reply_to": exc.seq, "reason": exc.reason},
+                    [str(exc)], exit_code=2)
     post = res["post"]
-    lines = [f"Posted #{post['seq']} {post['from']} → {','.join(post['to'])} ({post['kind']})."]
+    to_label = ",".join(post["to"]) if post.get("to") else "(stage)"
+    meta = []
+    if post.get("reply_to") is not None:
+        meta.append(f"reply_to=#{post['reply_to']}")
+    if post.get("owner_ack"):
+        meta.append("owner_ack")
+    meta_str = f" [{', '.join(meta)}]" if meta else ""
+    lines = [f"Posted #{post['seq']} {post['from']} → {to_label} ({post['kind']}){meta_str}."]
     for name, r in res["notified"].items():
         lines.append(f"  notify {name}: {'sent' if r.get('sent') else 'not sent (' + str(r.get('reason') or r.get('stderr')) + ')'}")
+    if res.get("reactivated_workers"):
+        lines.append(f"  awaiting ruling ack from: {', '.join(res['reactivated_workers'])} "
+                     f"(--kind note|objection --reply-to {post['seq']})")
+    if res.get("unpushable_ack_workers"):
+        lines.append(f"  WARNING: cannot push to {', '.join(res['unpushable_ack_workers'])} (no push channel); "
+                     f"re-dispatch confirmation or resolve with `post --as router --to {to_label} --kind ruling "
+                     f"--reply-to {post['seq']} --owner-ack \"<裁定>\"`.")
     return emit(args, res, lines)
-
 
 
 def cmd_read(args: argparse.Namespace) -> int:
@@ -251,7 +290,16 @@ def cmd_read(args: argparse.Namespace) -> int:
             repo.save_members(members)
     lines = [f"board head #{head}; {len(mine)} post(s) for {args.as_} after #{since}."]
     for p in mine:
-        lines.append(f"\n#{p['seq']} [{p['kind']}] {p['from']} → {','.join(p['to'])} {p['time']}")
+        to_label = ",".join(p["to"]) if p.get("to") else "(stage)"
+        tags = []
+        if p.get("stage"):
+            tags.append(f"stage={p['stage']}")
+        if p.get("reply_to") is not None:
+            tags.append(f"reply_to=#{p['reply_to']}")
+        if p.get("owner_ack"):
+            tags.append(f"owner_ack={p['owner_ack']}")
+        tag_str = f" ({', '.join(tags)})" if tags else ""
+        lines.append(f"\n#{p['seq']} [{p['kind']}] {p['from']} → {to_label}{tag_str} {p['time']}")
         lines.append(p["text"].rstrip())
     return emit(args, {"head": head, "since": since, "posts": mine}, lines)
 

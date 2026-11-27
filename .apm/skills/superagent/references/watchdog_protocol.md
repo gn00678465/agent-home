@@ -11,8 +11,8 @@ worker 完成時會在 board 發 `done` post，並推送通知給 Router。漏�
 |---|---|
 | worker 不是 `active`（已發 done、已關閉） | 放行 |
 | 有寄給它、還沒讀的 post | 擋下，要它先跑 `read` |
-| 最後一則交辦（`brief` 或 `answer`）之後還沒發過 post | 擋下，要它發 `done`；需要決定時發 `ask` |
-| 發過 `ask` 在等 Router | 放行，這是合法的等待 |
+| 最後一則交辦或待確認訊息（`brief`、`answer`、`ruling`）之後還沒發過 post | 擋下，要它發 `done`／`ask`／`objection`；若是 Router 喚醒確認的 `ruling`，提示回 `--kind note --reply-to <seq>` 或 `--kind objection --reply-to <seq>` |
+| 發過 `ask` 或 `objection` 在等 Router | 放行，這是合法的等待 |
 | 同一個 board 狀態已經擋過一次 | 放行，交給 watch，避免無限擋 |
 
 hook 出錯時一律放行，不會把 worker 卡住。

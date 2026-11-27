@@ -53,15 +53,15 @@ Router 守則：
 | `set-role --role <名稱> [--kind write\|review] [--purpose] [--ade hc\|orca\|native] [--cli claude\|codex\|agy] [--model] [--effort] [--confirm]` | 建立或修改角色。新角色要給 `--kind`；沒加 `--confirm` 時只回傳建議值（exit 3），問過 Owner 才加 `--confirm` 寫入 |
 | `stage-new --stage <s> --goal <g> [--base]` | 建立階段與 brief 骨架 |
 | `dispatch --stage <s> --role <r> [--marker] [--worktree --create-worktree-branch] [--dry-run]` | 依角色設定啟動 worker 並登記 |
-| `post --as <me> --to router\|<worker>\|all --kind brief\|done\|ask\|answer\|note\|alert --text\|--file` | 發 post，並推送通知給收件者 |
+| `post --as <me> --to router\|<worker>\|all --kind brief\|done\|ask\|answer\|note\|alert\|ruling\|objection [--stage <s>] [--reply-to <seq>] [--owner-ack <裁定>] [--skip-check] --text\|--file` | 發 post 並推送通知；worker 發 `done` 前先跑本地自檢（標記、佔位符、本輪既有日誌 `exit=`） |
 | `read --as <me> [--peek] [--since N]` | 讀未讀的 post，並把游標推到最新 |
 | `watch [--auto-nudge] [--loop]` / `watch-start` | 巡檢；詳見 [watchdog_protocol.md](references/watchdog_protocol.md) |
 | `hook-stop --as <worker>` | worker CLI 的 Stop hook 呼叫，Router 不必手動執行 |
 | `diagnose --worker <id>` | 單一 worker 的畫面、日誌、子行程樹 |
-| `verify-gate --stage <s> --report <f> --marker <m> [--commit] [--round N]` | 檢查完成標記、佔位字串、本輪日誌的 `exit=` 行、commit 是否存在 |
-| `next-round --stage <s> --ruling <ruling_r<n>.md>` | 審查沒過時開下一輪修正；已到 `max_review_rounds`（預設 3）就回 exit 2 和 `ROUND_LIMIT` |
+| `verify-gate --stage <s> --report <f> --marker <m> [--commit] [--round N]` | 檢查完成標記、佔位符、本輪日誌 `exit=`、commit、未解 `objection`、待確認 `ruling`；帶 `--commit` 時另擋未處理的 `VERDICT: FAIL` |
+| `next-round --stage <s> --ruling <ruling_r<n>.md>` | 審查沒過時開下一輪修正並自動把 `ruling` 寫上 board；已到 `max_review_rounds`（預設 3）就回 exit 2 和 `ROUND_LIMIT` |
 | `status` | 回答「進度如何」用 |
-| `reset-stage --stage <s> --reason <r>` / `--owner-ack <裁定>` | 記一次從 base 重做；達上限就停下交給 Owner |
+| `reset-stage --stage <s> --reason <r>` / `--owner-ack <裁定>` | 記一次從 base 重做（遞增 `attempt`，隔離舊異議與舊裁定）；達上限就停下交給 Owner |
 | `close-worker --worker <id> [--remove-worktree]` | 結束 worker 並清理 |
 
 各 ADE 的差異見 [backends.md](references/backends.md)，brief 範本見 [brief_templates.md](references/brief_templates.md)。
@@ -98,7 +98,7 @@ superagent.py set-role --project $P --role perf-review --kind review --purpose "
 
 ## 2. Brief 與開工前審查
 
-複雜的階段先派一個 `write` 類角色（例如 `brief`）寫 `brief.md`。brief 要有 Mandate、不變量、邊界表、驗證指令和完成標記，路徑一律寫絕對路徑。關鍵階段再派一個 `review` 類角色（例如 `brief-review`）做紅隊審查：工程空白由 Router 補進設計，產品空白問 Owner。
+複雜的階段先派一個 `write` 類角色（例如 `brief`）寫 `brief.md`。brief 要有 Mandate、不變量、邊界表、驗證指令和完成標記，路徑一律寫絕對路徑。關鍵階段再派一個 `review` 類角色（例如 `brief-review`）做紅隊審查：工程空白由 Router 補進設計並以 `post --as router --to all --stage <s> --kind ruling` 留紀錄，產品空白問 Owner。
 
 ## 3. 實作
 
@@ -111,12 +111,14 @@ superagent.py dispatch --project $P --stage 01-x --role impl --marker "IMPL DONE
 
 `dispatch` 依角色設定做這些事：
 
-- 啟動 worker，並在 board 記一則 `brief` post。
+- 啟動 worker，並在 board 記一則帶 `stage`、`round`、`attempt` 的 `brief` post；若本階段（同 `attempt`）已有 `ruling`，會自動注入 worker 的 prompt 檔。
 - hc 上的 claude worker 會掛上 stop hook：沒 post 就結束回合會被擋回去。其他組合靠 watch。
 - 機器上有 hc 時，自動以 hc 背景 terminal 啟動 `watch` 迴圈，不論 Router 在 hc 或 Orca。
 - 角色是 `native` 時，輸出 `native_spawn.prompt`。Router 用自己的 subagent 工具把它原樣交給 subagent。
 
 `dispatch` 輸出的 `Report:` 就是這次的報告路徑，`verify-gate --report` 用它。同一個角色再派一次（例如關掉卡死的 worker 後重派）時，報告依序改成 `report-<角色>-r2.md`、`-r3.md`，舊報告保留，它的完成標記也不會讓 `watch` 把新 worker 當成已完成。`--report` 指定的檔案已經存在時，`dispatch` 回 `REPORT_EXISTS`。
+
+worker 執行 `post --kind done` 時，會先在本地檢查完成標記與佔位符；非 `review` 角色還會檢查本輪既有日誌的 `exit=`（空日誌不擋，避免誤擋 `brief`；特殊情況可加 `--skip-check`）。沒過會直接在 worker 端 exit 1 退件，不會送進 board。
 
 派完工就結束這一回合。worker 發 post 時，通知會推到 Router：
 
@@ -127,7 +129,8 @@ superagent.py dispatch --project $P --stage 01-x --role impl --marker "IMPL DONE
 不管哪一種，都照通知裡的指令跑 `read --as router` 讀全文。
 
 - 收到 `done`：跑 `verify-gate`，沒過就退回補齊。
-- 收到 `ask`：決定後用 `post --as router --to <worker> --kind answer` 回覆，worker 會收到推送。
+- 收到 `ask`：決定後用 `post --as router --to <worker> --kind answer --reply-to <seq>` 回覆，worker 會收到推送。
+- 收到 `objection`：未獲對應回覆前，`verify-gate` 一律不通過。首次異議由 Router 附證據用 `post --as router --to <worker> --kind answer|ruling --reply-to <seq>` 回覆；若出現**再異議**（worker 對 Router 回覆 `objection` 的 `answer`／`ruling` 再提 `objection`）或**兩名以上不同 worker 反對同一則 `ruling`**，Router 無法自行關閉（回 exit 2 和 `ESCALATION_REQUIRED`），必須升級交給 Owner 裁定，再以 `post --as router --to <worker> --kind ruling --reply-to <seq> --owner-ack "<裁定>"` 解鎖。
 - 收到 `alert`：照 watchdog_protocol.md 的表格處理。
 
 ## 4. 審查與最多 3 輪修正
@@ -136,15 +139,16 @@ superagent.py dispatch --project $P --stage 01-x --role impl --marker "IMPL DONE
 
 一輪是一次寫作（第 1 輪是實作，之後是修正）加上它的審查。階段的 `round` 記在 `state.json`，從 1 開始，只有 `next-round` 會加一。審查回報後，Router 逐條對照程式碼，寫出 `ruling_r<n>.md`（`n` 是目前的 round）：
 
-- 沒有成立的 P1／P2：通過，進入步驟 5。
-- 有成立的 P1／P2：跑 `next-round --stage <s> --ruling ruling_r<n>.md`。exit 0 時 round 變成 `n+1`：寫 `brief_r<n+1>.md`，派 `fix` 修正並做變異驗證，日誌寫成 `logs/r<n+1>_*.log`，再送審。
-- 第 3 輪仍不過：`next-round` 回 exit 2 和 `ROUND_LIMIT`，之後 `dispatch` 也會拒絕。不開第 4 輪。整合 3 份審查報告，找出 brief 漏掉的不變量。跑 `reset-stage --reason "<brief 的結構性空白>"`，修訂 `brief.md`，丟掉舊分支和 worktree，從 base 重新派工。`reset-stage` 把 round 歸回 1，並把舊日誌移到 `logs-attempt<n>/`。
+- 審查全部原本即 `VERDICT: PASS` 且無成立的 P1／P2：通過，進入步驟 5。
+- 審查報告為 `VERDICT: FAIL`，但 Router 核對後駁回所有意見、打算直接 PASS：不允許靜默略過。先執行 `post --as router --to <rev_worker> --kind ruling --file ruling_r<n>.md` 喚醒原審查者（工具會自動將該 `ready` worker 切回 `active` 並追蹤確認）。原審查者讀完後回 `--kind note --reply-to <seq>`（同意）或 `--kind objection --reply-to <seq>`（反駁）；確認前 `verify-gate` 不通過，直接跑 `verify-gate --commit` 也會被 `unaddressed_fail_reviews` 擋下。若原審查者是不可推送的 `native` worker，則重派確認或交由 Owner 以 `--owner-ack` 裁定。
+- 有成立的 P1／P2：跑 `next-round --stage <s> --ruling ruling_r<n>.md`。`next-round` 會自動發出一則 `ruling` post（只推送給同階段 `active` worker，不吵醒已 `ready` 的舊 worker），且之後 `dispatch` 會自動把本階段既有 `ruling` 注入新 worker prompt（`review` 角色必須逐條核對前輪被駁回的意見）。exit 0 時 round 變成 `n+1`：寫 `brief_r<n+1>.md`，派 `fix` 修正並做變異驗證，日誌寫成 `logs/r<n+1>_*.log`，再送審。
+- 第 3 輪仍不過：`next-round` 回 exit 2 和 `ROUND_LIMIT`，之後 `dispatch` 也會拒絕。不開第 4 輪。整合 3 份審查報告，找出 brief 漏掉的不變量。跑 `reset-stage --reason "<brief 的結構性空白>"`，修訂 `brief.md`，丟掉舊分支和 worktree，從 base 重新派工。`reset-stage` 把 round 歸回 1、遞增 `attempt`（隔離舊 attempt 的 `objection` 與 `ruling`），並把舊日誌移到 `logs-attempt<n>/`。
 - `verify-gate` 只檢查目前這一輪的日誌：第 1 輪是沒有 `r<n>_` 前綴的 `.log`，第 n 輪是 `r<n>_*.log`。前一輪失敗的日誌不會讓之後的輪次過不了。要檢查別輪就加 `--round`。
 - 同一階段最多重做 `max_stage_resets` 次（預設 2）。超過時，`reset-stage` 回 exit 2 和 `STAGE_HALTED`，`dispatch` 和 `stage-new` 都會拒絕。把 `reset_history` 交給 Owner 裁定，裁定後用 `reset-stage --owner-ack "<裁定>"` 解除。
 
 ## 5. 收尾
 
-全部 `VERDICT: PASS` 且 `verify-gate` 通過後：
+全部 `VERDICT: PASS`（或 `FAIL` 駁回已獲原審查者確認）且 `verify-gate --commit <SHA>` 通過後：
 
 1. `close-worker --remove-worktree`。worker 回報後仍停在自己的輸入提示，不會自己結束。
 2. 依專案規範合併，再跑最終驗證。
@@ -158,5 +162,6 @@ superagent.py dispatch --project $P --stage 01-x --role impl --marker "IMPL DONE
 - 用 `stage-new --force` 或換階段名稱，繞過重做上限或輪次上限。
 - 修正輪的日誌沒加 `r<n>_` 前綴。`verify-gate` 找不到本輪日誌，回報 `logs_present` 失敗；在 brief 裡寫清楚日誌檔名。
 - 審查沒過卻沒跑 `next-round` 就派 `fix`。round 停在原地，`verify-gate` 會去看上一輪的日誌，上限也擋不住。
+- 回覆 `objection` 沒帶 `--reply-to <seq>`，導致 `verify-gate` 仍判 `unresolved_objections` 失敗；或是想駁回 `VERDICT: FAIL` 直接合併卻沒對原 reviewer 發 `ruling` 確認，被 `verify-gate --commit` 擋下。
 - 沒有先 `set-role` 就派工，`dispatch` 會回 `ROLE_UNDEFINED`。角色的 model 或 effort 是空的，則回 `ROLE_UNPINNED`。用 `--cli` 換 CLI 時要同時給 `--model`。
 - Router 換了 terminal 卻沒再跑 `init`。推送會送到舊的端點。

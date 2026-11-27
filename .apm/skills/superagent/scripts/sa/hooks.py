@@ -15,8 +15,8 @@ from .board import cli_cmd
 from .constants import ROUTER
 from .store import Repo, atomic_write_json
 
-# Posts that hand the worker work; after one of these the worker owes a post (done or ask) before stopping.
-NEEDS_REPLY = ("brief", "answer")
+# Posts that hand the worker work or require confirmation; after one of these the worker owes a post before stopping.
+NEEDS_REPLY = ("brief", "answer", "ruling")
 
 
 def stop_decision(repo: Repo, wid: str) -> str | None:
@@ -29,8 +29,8 @@ def stop_decision(repo: Repo, wid: str) -> str | None:
     head = posts[-1]["seq"] if posts else 0
     last_read, last_post = int(w.get("last_read_seq", 0)), int(w.get("last_post_seq", 0))
     unread = [p["seq"] for p in posts if p["seq"] > last_read and wid in p.get("to", [])]
-    owed = [p["seq"] for p in posts if wid in p.get("to", []) and p.get("kind") in NEEDS_REPLY and p["seq"] > last_post]
-    if not unread and not owed:
+    owed_posts = [p for p in posts if wid in p.get("to", []) and p.get("kind") in NEEDS_REPLY and p["seq"] > last_post]
+    if not unread and not owed_posts:
         return None
     # Block once per board state, like swarm's last_park_blocked_seq; a repeat stop falls through to watch.
     key = f"{head}:{last_post}:{last_read}"
@@ -40,10 +40,16 @@ def stop_decision(repo: Repo, wid: str) -> str | None:
     repo.save_members(members)
     if unread:
         return f"[superagent] board 上有給你的新訊息 #{', #'.join(map(str, unread))}，先讀再決定：{cli_cmd('read', repo, '--as', wid)}"
+    latest_owed = owed_posts[-1]
+    if latest_owed.get("kind") == "ruling" and wid in (latest_owed.get("require_ack_from") or []):
+        rseq = str(latest_owed["seq"])
+        ack_cmd = cli_cmd("post", repo, "--as", wid, "--to", ROUTER, "--kind", "note", "--reply-to", rseq, "--text", "同意裁定")
+        obj_cmd = cli_cmd("post", repo, "--as", wid, "--to", ROUTER, "--kind", "objection", "--reply-to", rseq, "--text", "<反駁理由>")
+        return f"[superagent] 你尚未回應 ruling #{rseq}。同意請執行：{ack_cmd}；若反駁請執行：{obj_cmd}"
     report = w.get("report_path", "<報告>")
     return ("[superagent] 你還沒在 board 回報。完成了就執行："
             f"{cli_cmd('post', repo, '--as', wid, '--to', ROUTER, '--kind', 'done', '--file', report)}；"
-            f"需要 Router 決定才能繼續就用 --kind ask 說明，然後再結束。")
+            f"需要 Router 決定就用 --kind ask，要反駁裁定或設計就用 --kind objection，然後再結束。")
 
 
 def cmd_hook_stop(args: argparse.Namespace) -> int:

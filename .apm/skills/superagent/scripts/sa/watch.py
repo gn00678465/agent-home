@@ -95,12 +95,14 @@ def watch_tick(repo: Repo, args: argparse.Namespace) -> dict[str, Any]:
         workers = members.get("workers") or {}
         for w in [w for w in workers.values() if w.get("status") == "active"]:
             wid, stage = w["id"], w["stage"]
-            found, line = check_report_marker(Path(w["report_path"]), w.get("expected_marker"))
-            if found:
-                # The worker finished but skipped `post`: report for it so the Router's single inbox stays the board.
-                marker_posts.append((wid, f"(watch) 報告已有完成標記 `{line}`，但 worker 沒有 post。報告：{w['report_path']}"))
-                events.append({"worker_id": wid, "event": "MARKER_WITHOUT_POST", "tier": 0, "should_notify": True})
-                continue
+            # A worker with done_seq was reactivated after finishing (e.g. for ruling ack); its old report already has the marker.
+            if not w.get("done_seq"):
+                found, line = check_report_marker(Path(w["report_path"]), w.get("expected_marker"))
+                if found:
+                    # The worker finished but skipped `post`: report for it so the Router's single inbox stays the board.
+                    marker_posts.append((wid, f"(watch) 報告已有完成標記 `{line}`，但 worker 沒有 post。報告：{w['report_path']}"))
+                    events.append({"worker_id": wid, "event": "MARKER_WITHOUT_POST", "tier": 0, "should_notify": True})
+                    continue
             if w.get("ade") in ADAPTORS and not ADAPTORS[w["ade"]].can_probe:
                 continue  # nothing to probe: the harness reports a native subagent's end to the Router itself
             probe = probe_worker(w, mock)

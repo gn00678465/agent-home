@@ -432,7 +432,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:1188a83d8a49d8ad3eb6ca1789b57cf1b2269edac479a30b676160fdae46000e
+  content_hash: sha256:5675cd5985d187ece2ba4e843446445edd56e4cacf9cee0f2482036f61ff6cd1
 - kind: project-relative
   target: claude
   value: .claude/skills/superagent/references/backends.md
@@ -450,7 +450,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:78142658bc82b0952dd8e3e80d433721ee2c508bb53c84f9b829d66a9c24ddcf
+  content_hash: sha256:4bb8729d15d7452bc74a3d7a0744892e6dce6baea020e03b36e7996edda6b879
 - kind: project-relative
   target: claude
   value: .claude/skills/superagent/references/watchdog_protocol.md
@@ -459,7 +459,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:1c3dedb387794d42ec688a1e7eb77413d47028aded636e5b9c275d798871b415
+  content_hash: sha256:ddf99d8205ffc15fb44c60febd86d07bf58a65219889118f453dcb3f809cc7d1
 - kind: project-relative
   target: claude
   value: .claude/skills/superagent/scripts/sa/__init__.py
@@ -522,7 +522,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:d2a3c6a1ab6b5a0c9568e11f06d1621c55c6704f629167568bd1170f1f430c5f
+  content_hash: sha256:6ec06af5e5c40d1a63c78ae483b97b95a5f596e5284a1ce2508d1b5e29be67e7
 - kind: project-relative
   target: claude
   value: .claude/skills/superagent/scripts/sa/board.py
@@ -531,7 +531,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:4e8144d17586dec8bb5e2f55f24a70688c13354a6383d8ea9ddeb7a17ef346a5
+  content_hash: sha256:b72913c8537cb6737daa7a13ebeffac4ed8c1712de52c11c8cd349a314f9f1ab
 - kind: project-relative
   target: claude
   value: .claude/skills/superagent/scripts/sa/clis.py
@@ -549,7 +549,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:e2035fd20f55149b3c483fabd792c011c53bb98de53ee1bf76f98ee90f262d7b
+  content_hash: sha256:620114a3a961b9a481fcd70a3a7be39f7e7a371c8a2a4261818f84565b0610be
 - kind: project-relative
   target: claude
   value: .claude/skills/superagent/scripts/sa/constants.py
@@ -558,7 +558,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:acfaaff2645583fef4696d780e62e6e6a5aa24131da71e75b3a1e6771e6fe8fa
+  content_hash: sha256:ea1dd0c3576fa3405be3bf409869dfe5c7cd495b9f3d4d7bb281fc094440c7b1
 - kind: project-relative
   target: claude
   value: .claude/skills/superagent/scripts/sa/hooks.py
@@ -567,7 +567,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:eb6d947878183f2a90d799d22af47d62e1baa47b6e2a1df50f4fa906c783fac6
+  content_hash: sha256:9e2b87172503e52a0d8dc6a8b677d01408637570d865f3182cb70ebc8e39d383
 - kind: project-relative
   target: claude
   value: .claude/skills/superagent/scripts/sa/procs.py
@@ -594,7 +594,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:fe1e70721b8f734ddf7fc17f0f5f54329bc1b4ac32f56690a5a54e01ef6741cc
+  content_hash: sha256:8f4500b90690caa83f89513de2bdfc98aa82b4c6b408ffac85d96a4f854bd2f0
 - kind: project-relative
   target: claude
   value: .claude/skills/superagent/scripts/sa/store.py
@@ -603,7 +603,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:d59b21b1df070f45835b2e2a0a5eec3b31f202089897af60d0581acecf80f48d
+  content_hash: sha256:c85f0e57a38591943c0968d7cdbbb6f42a17554f783527f5e176df8743279f12
 - kind: project-relative
   target: claude
   value: .claude/skills/superagent/scripts/sa/watch.py
@@ -612,7 +612,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:defc301e36ba6902f1aa22f7ce2ee1be1bd6cd4572bd2ff7eb6dabf5bde3532a
+  content_hash: sha256:cca05156fe6aaa726d8b289bb0ac0e179fec38f1044dff676b6a74445b52774b
 - kind: project-relative
   target: claude
   value: .claude/skills/superagent/scripts/superagent.py
@@ -621,7 +621,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:d7631ccd4c57325f31d11782dd51b441f7b4f6af5cb582171c335116e8d1a928
+  content_hash: sha256:9b4a7e45a96d5170297ca5fa29f3d9a4191257b546a995f7e8d7cfa6a5306112
 - kind: project-relative
   target: claude
   value: .claude/skills/superagent/tests/test_superagent.py
@@ -630,7 +630,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:f418d3b80d832b71bbe1fb486f6a5b71ae268982fdff9711046dd9fe2e59e493
+  content_hash: sha256:c7ae116e115c374c59edc2a12c4906820b93833825e81589f04bd7eced112ac7
 - kind: project-relative
   target: claude
   value: .claude/skills/ui-design
@@ -1071,7 +1071,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:1188a83d8a49d8ad3eb6ca1789b57cf1b2269edac479a30b676160fdae46000e
+  content_hash: sha256:5675cd5985d187ece2ba4e843446445edd56e4cacf9cee0f2482036f61ff6cd1
 - kind: project-relative
   target: codex
   value: .agents/skills/superagent/references/backends.md
@@ -1089,7 +1089,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:78142658bc82b0952dd8e3e80d433721ee2c508bb53c84f9b829d66a9c24ddcf
+  content_hash: sha256:4bb8729d15d7452bc74a3d7a0744892e6dce6baea020e03b36e7996edda6b879
 - kind: project-relative
   target: codex
   value: .agents/skills/superagent/references/watchdog_protocol.md
@@ -1098,7 +1098,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:1c3dedb387794d42ec688a1e7eb77413d47028aded636e5b9c275d798871b415
+  content_hash: sha256:ddf99d8205ffc15fb44c60febd86d07bf58a65219889118f453dcb3f809cc7d1
 - kind: project-relative
   target: codex
   value: .agents/skills/superagent/scripts/sa/__init__.py
@@ -1161,7 +1161,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:d2a3c6a1ab6b5a0c9568e11f06d1621c55c6704f629167568bd1170f1f430c5f
+  content_hash: sha256:6ec06af5e5c40d1a63c78ae483b97b95a5f596e5284a1ce2508d1b5e29be67e7
 - kind: project-relative
   target: codex
   value: .agents/skills/superagent/scripts/sa/board.py
@@ -1170,7 +1170,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:4e8144d17586dec8bb5e2f55f24a70688c13354a6383d8ea9ddeb7a17ef346a5
+  content_hash: sha256:b72913c8537cb6737daa7a13ebeffac4ed8c1712de52c11c8cd349a314f9f1ab
 - kind: project-relative
   target: codex
   value: .agents/skills/superagent/scripts/sa/clis.py
@@ -1188,7 +1188,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:e2035fd20f55149b3c483fabd792c011c53bb98de53ee1bf76f98ee90f262d7b
+  content_hash: sha256:620114a3a961b9a481fcd70a3a7be39f7e7a371c8a2a4261818f84565b0610be
 - kind: project-relative
   target: codex
   value: .agents/skills/superagent/scripts/sa/constants.py
@@ -1197,7 +1197,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:acfaaff2645583fef4696d780e62e6e6a5aa24131da71e75b3a1e6771e6fe8fa
+  content_hash: sha256:ea1dd0c3576fa3405be3bf409869dfe5c7cd495b9f3d4d7bb281fc094440c7b1
 - kind: project-relative
   target: codex
   value: .agents/skills/superagent/scripts/sa/hooks.py
@@ -1206,7 +1206,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:eb6d947878183f2a90d799d22af47d62e1baa47b6e2a1df50f4fa906c783fac6
+  content_hash: sha256:9e2b87172503e52a0d8dc6a8b677d01408637570d865f3182cb70ebc8e39d383
 - kind: project-relative
   target: codex
   value: .agents/skills/superagent/scripts/sa/procs.py
@@ -1233,7 +1233,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:fe1e70721b8f734ddf7fc17f0f5f54329bc1b4ac32f56690a5a54e01ef6741cc
+  content_hash: sha256:8f4500b90690caa83f89513de2bdfc98aa82b4c6b408ffac85d96a4f854bd2f0
 - kind: project-relative
   target: codex
   value: .agents/skills/superagent/scripts/sa/store.py
@@ -1242,7 +1242,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:d59b21b1df070f45835b2e2a0a5eec3b31f202089897af60d0581acecf80f48d
+  content_hash: sha256:c85f0e57a38591943c0968d7cdbbb6f42a17554f783527f5e176df8743279f12
 - kind: project-relative
   target: codex
   value: .agents/skills/superagent/scripts/sa/watch.py
@@ -1251,7 +1251,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:defc301e36ba6902f1aa22f7ce2ee1be1bd6cd4572bd2ff7eb6dabf5bde3532a
+  content_hash: sha256:cca05156fe6aaa726d8b289bb0ac0e179fec38f1044dff676b6a74445b52774b
 - kind: project-relative
   target: codex
   value: .agents/skills/superagent/scripts/superagent.py
@@ -1260,7 +1260,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:d7631ccd4c57325f31d11782dd51b441f7b4f6af5cb582171c335116e8d1a928
+  content_hash: sha256:9b4a7e45a96d5170297ca5fa29f3d9a4191257b546a995f7e8d7cfa6a5306112
 - kind: project-relative
   target: codex
   value: .agents/skills/superagent/tests/test_superagent.py
@@ -1269,7 +1269,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:f418d3b80d832b71bbe1fb486f6a5b71ae268982fdff9711046dd9fe2e59e493
+  content_hash: sha256:c7ae116e115c374c59edc2a12c4906820b93833825e81589f04bd7eced112ac7
 - kind: project-relative
   target: codex
   value: .agents/skills/ui-design
@@ -1501,29 +1501,29 @@ local_deployed_file_hashes:
   .agents/skills/slim-agents-md/references/principles.md: sha256:76d89cfb43915dd73232a045593854257142727c693cf4ef610d4b53d914cc92
   .agents/skills/subtractive-engineering/SKILL.md: sha256:29b6c886ad84b4894f72f764a3acfd9a51cc3d3edc75302601d8b441d6dfbd61
   .agents/skills/subtractive-engineering/agents/openai.yaml: sha256:2572651893315d373e08f8546731b235035b869532b77cdc8898eecd9d054257
-  .agents/skills/superagent/SKILL.md: sha256:1188a83d8a49d8ad3eb6ca1789b57cf1b2269edac479a30b676160fdae46000e
+  .agents/skills/superagent/SKILL.md: sha256:5675cd5985d187ece2ba4e843446445edd56e4cacf9cee0f2482036f61ff6cd1
   .agents/skills/superagent/references/backends.md: sha256:ee5fb7655ea26ac5b7f8ead2d31bb2d546da49677158ad73698f1e8b31ca8a66
-  .agents/skills/superagent/references/brief_templates.md: sha256:78142658bc82b0952dd8e3e80d433721ee2c508bb53c84f9b829d66a9c24ddcf
-  .agents/skills/superagent/references/watchdog_protocol.md: sha256:1c3dedb387794d42ec688a1e7eb77413d47028aded636e5b9c275d798871b415
+  .agents/skills/superagent/references/brief_templates.md: sha256:4bb8729d15d7452bc74a3d7a0744892e6dce6baea020e03b36e7996edda6b879
+  .agents/skills/superagent/references/watchdog_protocol.md: sha256:ddf99d8205ffc15fb44c60febd86d07bf58a65219889118f453dcb3f809cc7d1
   .agents/skills/superagent/scripts/sa/__init__.py: sha256:0eed621074470a68f8a7740f511422178d0145cbd6328efbb328f59edbf11b5b
   .agents/skills/superagent/scripts/sa/adaptors/__init__.py: sha256:c67d268cb6217b896d472d7fd2ef1f656fe9e93fb47aa88eb8fdaf5fc41b87ef
   .agents/skills/superagent/scripts/sa/adaptors/base.py: sha256:12f4324555762bddd09ee88ce86fc595f8e74a7633607773c2c637c5beb1b87a
   .agents/skills/superagent/scripts/sa/adaptors/hc_adaptor.py: sha256:3696be5c0894184f8804def59a0d180faaf03b49f67d2bcdd93c3969cc65c4db
   .agents/skills/superagent/scripts/sa/adaptors/native_adaptor.py: sha256:595131ebe4df7922fc6d238447943f1bca2b35abcf938e4dd34733056b4583a6
   .agents/skills/superagent/scripts/sa/adaptors/orca_adaptor.py: sha256:2bbb9261e8c3956efbdd3315d25f7005d991fe0b0ba77b785b0d78aeda17a3e7
-  .agents/skills/superagent/scripts/sa/ade.py: sha256:d2a3c6a1ab6b5a0c9568e11f06d1621c55c6704f629167568bd1170f1f430c5f
-  .agents/skills/superagent/scripts/sa/board.py: sha256:4e8144d17586dec8bb5e2f55f24a70688c13354a6383d8ea9ddeb7a17ef346a5
+  .agents/skills/superagent/scripts/sa/ade.py: sha256:6ec06af5e5c40d1a63c78ae483b97b95a5f596e5284a1ce2508d1b5e29be67e7
+  .agents/skills/superagent/scripts/sa/board.py: sha256:b72913c8537cb6737daa7a13ebeffac4ed8c1712de52c11c8cd349a314f9f1ab
   .agents/skills/superagent/scripts/sa/clis.py: sha256:e0248cf9a69b727d43a7992f3804a4574450c553cff5a05f0e483102f8a4590d
-  .agents/skills/superagent/scripts/sa/commands.py: sha256:e2035fd20f55149b3c483fabd792c011c53bb98de53ee1bf76f98ee90f262d7b
-  .agents/skills/superagent/scripts/sa/constants.py: sha256:acfaaff2645583fef4696d780e62e6e6a5aa24131da71e75b3a1e6771e6fe8fa
-  .agents/skills/superagent/scripts/sa/hooks.py: sha256:eb6d947878183f2a90d799d22af47d62e1baa47b6e2a1df50f4fa906c783fac6
+  .agents/skills/superagent/scripts/sa/commands.py: sha256:620114a3a961b9a481fcd70a3a7be39f7e7a371c8a2a4261818f84565b0610be
+  .agents/skills/superagent/scripts/sa/constants.py: sha256:ea1dd0c3576fa3405be3bf409869dfe5c7cd495b9f3d4d7bb281fc094440c7b1
+  .agents/skills/superagent/scripts/sa/hooks.py: sha256:9e2b87172503e52a0d8dc6a8b677d01408637570d865f3182cb70ebc8e39d383
   .agents/skills/superagent/scripts/sa/procs.py: sha256:05245539643012ee53ca587668d863ed95e1378cf9b13a8a181a4f663423d162
   .agents/skills/superagent/scripts/sa/screen.py: sha256:4af7eb74def2ad2e60a31683dc5b2a2fddddd47a6c2f452596f0a23c9b79d3ed
-  .agents/skills/superagent/scripts/sa/stage.py: sha256:fe1e70721b8f734ddf7fc17f0f5f54329bc1b4ac32f56690a5a54e01ef6741cc
-  .agents/skills/superagent/scripts/sa/store.py: sha256:d59b21b1df070f45835b2e2a0a5eec3b31f202089897af60d0581acecf80f48d
-  .agents/skills/superagent/scripts/sa/watch.py: sha256:defc301e36ba6902f1aa22f7ce2ee1be1bd6cd4572bd2ff7eb6dabf5bde3532a
-  .agents/skills/superagent/scripts/superagent.py: sha256:d7631ccd4c57325f31d11782dd51b441f7b4f6af5cb582171c335116e8d1a928
-  .agents/skills/superagent/tests/test_superagent.py: sha256:f418d3b80d832b71bbe1fb486f6a5b71ae268982fdff9711046dd9fe2e59e493
+  .agents/skills/superagent/scripts/sa/stage.py: sha256:8f4500b90690caa83f89513de2bdfc98aa82b4c6b408ffac85d96a4f854bd2f0
+  .agents/skills/superagent/scripts/sa/store.py: sha256:c85f0e57a38591943c0968d7cdbbb6f42a17554f783527f5e176df8743279f12
+  .agents/skills/superagent/scripts/sa/watch.py: sha256:cca05156fe6aaa726d8b289bb0ac0e179fec38f1044dff676b6a74445b52774b
+  .agents/skills/superagent/scripts/superagent.py: sha256:9b4a7e45a96d5170297ca5fa29f3d9a4191257b546a995f7e8d7cfa6a5306112
+  .agents/skills/superagent/tests/test_superagent.py: sha256:c7ae116e115c374c59edc2a12c4906820b93833825e81589f04bd7eced112ac7
   .agents/skills/ui-design/SKILL.md: sha256:0092027883658b9491b24bb634a49b792cd01701a03d2b59ffbb5066cf427995
   .agents/skills/ui-design/agents/openai.yaml: sha256:aea4eaf83e0ab74b92eae3143ff70e2b681673cd288544e2ac83e39f6bc96d27
   .claude/agents/impeccable-ui-designer.md: sha256:652de8b170fe4d9cd5cb9a4744f57feb7869611f91e00dbd24f5a0a11798fe3b
@@ -1566,29 +1566,29 @@ local_deployed_file_hashes:
   .claude/skills/slim-agents-md/references/principles.md: sha256:76d89cfb43915dd73232a045593854257142727c693cf4ef610d4b53d914cc92
   .claude/skills/subtractive-engineering/SKILL.md: sha256:29b6c886ad84b4894f72f764a3acfd9a51cc3d3edc75302601d8b441d6dfbd61
   .claude/skills/subtractive-engineering/agents/openai.yaml: sha256:2572651893315d373e08f8546731b235035b869532b77cdc8898eecd9d054257
-  .claude/skills/superagent/SKILL.md: sha256:1188a83d8a49d8ad3eb6ca1789b57cf1b2269edac479a30b676160fdae46000e
+  .claude/skills/superagent/SKILL.md: sha256:5675cd5985d187ece2ba4e843446445edd56e4cacf9cee0f2482036f61ff6cd1
   .claude/skills/superagent/references/backends.md: sha256:ee5fb7655ea26ac5b7f8ead2d31bb2d546da49677158ad73698f1e8b31ca8a66
-  .claude/skills/superagent/references/brief_templates.md: sha256:78142658bc82b0952dd8e3e80d433721ee2c508bb53c84f9b829d66a9c24ddcf
-  .claude/skills/superagent/references/watchdog_protocol.md: sha256:1c3dedb387794d42ec688a1e7eb77413d47028aded636e5b9c275d798871b415
+  .claude/skills/superagent/references/brief_templates.md: sha256:4bb8729d15d7452bc74a3d7a0744892e6dce6baea020e03b36e7996edda6b879
+  .claude/skills/superagent/references/watchdog_protocol.md: sha256:ddf99d8205ffc15fb44c60febd86d07bf58a65219889118f453dcb3f809cc7d1
   .claude/skills/superagent/scripts/sa/__init__.py: sha256:0eed621074470a68f8a7740f511422178d0145cbd6328efbb328f59edbf11b5b
   .claude/skills/superagent/scripts/sa/adaptors/__init__.py: sha256:c67d268cb6217b896d472d7fd2ef1f656fe9e93fb47aa88eb8fdaf5fc41b87ef
   .claude/skills/superagent/scripts/sa/adaptors/base.py: sha256:12f4324555762bddd09ee88ce86fc595f8e74a7633607773c2c637c5beb1b87a
   .claude/skills/superagent/scripts/sa/adaptors/hc_adaptor.py: sha256:3696be5c0894184f8804def59a0d180faaf03b49f67d2bcdd93c3969cc65c4db
   .claude/skills/superagent/scripts/sa/adaptors/native_adaptor.py: sha256:595131ebe4df7922fc6d238447943f1bca2b35abcf938e4dd34733056b4583a6
   .claude/skills/superagent/scripts/sa/adaptors/orca_adaptor.py: sha256:2bbb9261e8c3956efbdd3315d25f7005d991fe0b0ba77b785b0d78aeda17a3e7
-  .claude/skills/superagent/scripts/sa/ade.py: sha256:d2a3c6a1ab6b5a0c9568e11f06d1621c55c6704f629167568bd1170f1f430c5f
-  .claude/skills/superagent/scripts/sa/board.py: sha256:4e8144d17586dec8bb5e2f55f24a70688c13354a6383d8ea9ddeb7a17ef346a5
+  .claude/skills/superagent/scripts/sa/ade.py: sha256:6ec06af5e5c40d1a63c78ae483b97b95a5f596e5284a1ce2508d1b5e29be67e7
+  .claude/skills/superagent/scripts/sa/board.py: sha256:b72913c8537cb6737daa7a13ebeffac4ed8c1712de52c11c8cd349a314f9f1ab
   .claude/skills/superagent/scripts/sa/clis.py: sha256:e0248cf9a69b727d43a7992f3804a4574450c553cff5a05f0e483102f8a4590d
-  .claude/skills/superagent/scripts/sa/commands.py: sha256:e2035fd20f55149b3c483fabd792c011c53bb98de53ee1bf76f98ee90f262d7b
-  .claude/skills/superagent/scripts/sa/constants.py: sha256:acfaaff2645583fef4696d780e62e6e6a5aa24131da71e75b3a1e6771e6fe8fa
-  .claude/skills/superagent/scripts/sa/hooks.py: sha256:eb6d947878183f2a90d799d22af47d62e1baa47b6e2a1df50f4fa906c783fac6
+  .claude/skills/superagent/scripts/sa/commands.py: sha256:620114a3a961b9a481fcd70a3a7be39f7e7a371c8a2a4261818f84565b0610be
+  .claude/skills/superagent/scripts/sa/constants.py: sha256:ea1dd0c3576fa3405be3bf409869dfe5c7cd495b9f3d4d7bb281fc094440c7b1
+  .claude/skills/superagent/scripts/sa/hooks.py: sha256:9e2b87172503e52a0d8dc6a8b677d01408637570d865f3182cb70ebc8e39d383
   .claude/skills/superagent/scripts/sa/procs.py: sha256:05245539643012ee53ca587668d863ed95e1378cf9b13a8a181a4f663423d162
   .claude/skills/superagent/scripts/sa/screen.py: sha256:4af7eb74def2ad2e60a31683dc5b2a2fddddd47a6c2f452596f0a23c9b79d3ed
-  .claude/skills/superagent/scripts/sa/stage.py: sha256:fe1e70721b8f734ddf7fc17f0f5f54329bc1b4ac32f56690a5a54e01ef6741cc
-  .claude/skills/superagent/scripts/sa/store.py: sha256:d59b21b1df070f45835b2e2a0a5eec3b31f202089897af60d0581acecf80f48d
-  .claude/skills/superagent/scripts/sa/watch.py: sha256:defc301e36ba6902f1aa22f7ce2ee1be1bd6cd4572bd2ff7eb6dabf5bde3532a
-  .claude/skills/superagent/scripts/superagent.py: sha256:d7631ccd4c57325f31d11782dd51b441f7b4f6af5cb582171c335116e8d1a928
-  .claude/skills/superagent/tests/test_superagent.py: sha256:f418d3b80d832b71bbe1fb486f6a5b71ae268982fdff9711046dd9fe2e59e493
+  .claude/skills/superagent/scripts/sa/stage.py: sha256:8f4500b90690caa83f89513de2bdfc98aa82b4c6b408ffac85d96a4f854bd2f0
+  .claude/skills/superagent/scripts/sa/store.py: sha256:c85f0e57a38591943c0968d7cdbbb6f42a17554f783527f5e176df8743279f12
+  .claude/skills/superagent/scripts/sa/watch.py: sha256:cca05156fe6aaa726d8b289bb0ac0e179fec38f1044dff676b6a74445b52774b
+  .claude/skills/superagent/scripts/superagent.py: sha256:9b4a7e45a96d5170297ca5fa29f3d9a4191257b546a995f7e8d7cfa6a5306112
+  .claude/skills/superagent/tests/test_superagent.py: sha256:c7ae116e115c374c59edc2a12c4906820b93833825e81589f04bd7eced112ac7
   .claude/skills/ui-design/SKILL.md: sha256:0092027883658b9491b24bb634a49b792cd01701a03d2b59ffbb5066cf427995
   .claude/skills/ui-design/agents/openai.yaml: sha256:aea4eaf83e0ab74b92eae3143ff70e2b681673cd288544e2ac83e39f6bc96d27
   .codex/agents/impeccable-ui-designer.toml: sha256:2537476ff752ba66dd3883f3c28cd42e2320312a23d6ca8eb4c6154c21a4368a
