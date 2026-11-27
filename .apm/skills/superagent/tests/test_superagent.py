@@ -649,8 +649,99 @@ class RulingsAndObjections(Base):
         self.assertEqual(cp["post"]["require_ack_from"], ["rev-closed"])
         self.assertEqual(cp["unpushable_ack_workers"], ["rev-closed"])
 
+    def test_first_objection_to_ask_answer_is_not_re_objection(self) -> None:
+        self.add_worker("w1")
+        ask_seq = post_message(self.repo, "w1", ["router"], "ask", "要用 A 還是 B？", push=False)["post"]["seq"]
+        ans_seq = post_message(self.repo, "router", ["w1"], "answer", "用 A", reply_to=ask_seq, push=False)["post"]["seq"]
+        obj_seq = post_message(self.repo, "w1", ["router"], "objection", "A 會破壞既有契約", reply_to=ans_seq, push=False)["post"]["seq"]
+
+        # First objection against a normal ask-answer must be resolvable by Router without --owner-ack.
+        ans2_out = Path(self.tmp.name) / "ans2.json"
+        self.assertEqual(
+            self.run_cli("post", "--as", "router", "--to", "w1", "--kind", "answer",
+                         "--reply-to", str(obj_seq), "--text", "已核對，維持 A 並補遷移", "--no-push", "--output", str(ans2_out)),
+            0,
+        )
+        ans2_seq = json.loads(ans2_out.read_text())["post"]["seq"]
+
+        # Only objecting again to Router's answer-to-objection escalates as re_objection.
+        reobj_seq = post_message(self.repo, "w1", ["router"], "objection", "再異議", reply_to=ans2_seq, push=False)["post"]["seq"]
+        self.assertEqual(
+            self.run_cli("post", "--as", "router", "--to", "w1", "--kind", "answer",
+                         "--reply-to", str(reobj_seq), "--text", "維持原判", "--no-push"),
+            2,
+        )
+
+    def test_unrelated_owner_ack_ruling_does_not_clear_fail_review(self) -> None:
+        sha = self.make_commit()
+        self.add_worker("impl-s1", ade="hc", marker="IMPL DONE")
+        self.add_worker("rev-s1", ade="hc", marker="VERDICT: PASS|VERDICT: FAIL")
+        with self.repo.lock():
+            m = self.repo.load_members()
+            m["workers"]["rev-s1"].update(kind="review", round=1, attempt=1)
+            self.repo.save_members(m)
+        rev_report = Path(self.repo.load_members()["workers"]["rev-s1"]["report_path"])
+        rev_report.write_text("P1 issue\nVERDICT: FAIL\n")
+        self.assertEqual(
+            self.run_cli("post", "--as", "rev-s1", "--to", "router", "--kind", "done", "--file", str(rev_report), "--no-push"),
+            0,
+        )
+        rev_done_seq = self.repo.load_members()["workers"]["rev-s1"]["done_seq"]
+
+        impl_report = self.repo.stage_dir("s1") / "report-impl.md"
+        impl_report.write_text("ok\nIMPL DONE\n")
+        (self.repo.stage_dir("s1") / "logs" / "test.log").write_text("ok\nexit=0\n")
+
+        # An unrelated owner_ack ruling sent to impl-s1 must NOT clear rev-s1's FAIL review.
+        self.assertEqual(
+            self.run_cli("post", "--as", "router", "--to", "impl-s1", "--kind", "ruling",
+                         "--owner-ack", "Owner: 無關裁定", "--no-push"),
+            0,
+        )
+        code, res = self.gate(impl_report, "IMPL DONE", "--commit", sha)
+        self.assertEqual(code, 1)
+        self.assertFalse(self.check_by_name(res, "unaddressed_fail_reviews")["pass"])
+
+        # An owner_ack ruling explicitly replying to rev-s1's done (or targeting rev-s1) DOES address it.
+        self.assertEqual(
+            self.run_cli("post", "--as", "router", "--to", "rev-s1", "--kind", "ruling",
+                         "--reply-to", str(rev_done_seq), "--owner-ack", "Owner: 接受已知限制可合併", "--no-push"),
+            0,
+        )
+        code, res = self.gate(impl_report, "IMPL DONE", "--commit", sha)
+        self.assertEqual(code, 0)
+        self.assertTrue(self.check_by_name(res, "unaddressed_fail_reviews")["pass"])
+
 
 class LocalDoneCheck(Base):
+    def test_review_worker_can_post_fail_done_even_when_stage_logs_failed(self) -> None:
+        self.add_worker("rev-s1", ade="native", marker="VERDICT: PASS|VERDICT: FAIL")
+        with self.repo.lock():
+            m = self.repo.load_members()
+            m["workers"]["rev-s1"]["kind"] = "review"
+            self.repo.save_members(m)
+        (self.repo.stage_dir("s1") / "logs" / "test.log").write_text("FAIL\nexit=1\n")
+        rev_report = Path(self.repo.load_members()["workers"]["rev-s1"]["report_path"])
+        rev_report.write_text("tests failed\nVERDICT: FAIL\n")
+        self.assertEqual(
+            self.run_cli("post", "--as", "rev-s1", "--to", "router", "--kind", "done", "--file", str(rev_report), "--no-push"),
+            0,
+        )
+        self.assertEqual(self.repo.load_members()["workers"]["rev-s1"]["status"], "ready")
+
+        # Review workers still get marker and placeholder checks locally.
+        self.add_worker("rev-bad", ade="native", marker="VERDICT: PASS|VERDICT: FAIL")
+        with self.repo.lock():
+            m = self.repo.load_members()
+            m["workers"]["rev-bad"]["kind"] = "review"
+            self.repo.save_members(m)
+        bad_report = Path(self.repo.load_members()["workers"]["rev-bad"]["report_path"])
+        bad_report.write_text("commit <SHA>\nVERDICT: FAIL\n")
+        self.assertEqual(
+            self.run_cli("post", "--as", "rev-bad", "--to", "router", "--kind", "done", "--file", str(bad_report), "--no-push"),
+            1,
+        )
+
     def test_done_precheck_blocks_bad_marker_placeholders_and_logs_but_allows_empty_logs(self) -> None:
         self.add_worker("w1", marker="IMPL DONE")
         report = Path(self.repo.load_members()["workers"]["w1"]["report_path"])

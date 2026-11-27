@@ -118,7 +118,7 @@ superagent.py dispatch --project $P --stage 01-x --role impl --marker "IMPL DONE
 
 `dispatch` 輸出的 `Report:` 就是這次的報告路徑，`verify-gate --report` 用它。同一個角色再派一次（例如關掉卡死的 worker 後重派）時，報告依序改成 `report-<角色>-r2.md`、`-r3.md`，舊報告保留，它的完成標記也不會讓 `watch` 把新 worker 當成已完成。`--report` 指定的檔案已經存在時，`dispatch` 回 `REPORT_EXISTS`。
 
-worker 執行 `post --kind done` 時，會先在本地檢查完成標記、佔位符與本輪既有日誌的 `exit=`（空日誌不擋，避免誤擋 `brief` 或靜態 `review`；特殊情況可加 `--skip-check`）。沒過會直接在 worker 端 exit 1 退件，不會送進 board。
+worker 執行 `post --kind done` 時，會先在本地檢查完成標記與佔位符；非 `review` 角色還會檢查本輪既有日誌的 `exit=`（空日誌不擋，避免誤擋 `brief`；特殊情況可加 `--skip-check`）。沒過會直接在 worker 端 exit 1 退件，不會送進 board。
 
 派完工就結束這一回合。worker 發 post 時，通知會推到 Router：
 
@@ -130,7 +130,7 @@ worker 執行 `post --kind done` 時，會先在本地檢查完成標記、佔�
 
 - 收到 `done`：跑 `verify-gate`，沒過就退回補齊。
 - 收到 `ask`：決定後用 `post --as router --to <worker> --kind answer --reply-to <seq>` 回覆，worker 會收到推送。
-- 收到 `objection`：未獲對應回覆前，`verify-gate` 一律不通過。首次異議由 Router 附證據用 `post --as router --to <worker> --kind answer|ruling --reply-to <seq>` 回覆；若出現**再異議**（worker 對 Router 的 `answer` 再提 `objection`）或**兩名以上不同 worker 反對同一則 `ruling`**，Router 無法自行關閉（回 exit 2 和 `ESCALATION_REQUIRED`），必須升級交給 Owner 裁定，再以 `post --as router --to <worker> --kind ruling --reply-to <seq> --owner-ack "<裁定>"` 解鎖。
+- 收到 `objection`：未獲對應回覆前，`verify-gate` 一律不通過。首次異議由 Router 附證據用 `post --as router --to <worker> --kind answer|ruling --reply-to <seq>` 回覆；若出現**再異議**（worker 對 Router 回覆 `objection` 的 `answer`／`ruling` 再提 `objection`）或**兩名以上不同 worker 反對同一則 `ruling`**，Router 無法自行關閉（回 exit 2 和 `ESCALATION_REQUIRED`），必須升級交給 Owner 裁定，再以 `post --as router --to <worker> --kind ruling --reply-to <seq> --owner-ack "<裁定>"` 解鎖。
 - 收到 `alert`：照 watchdog_protocol.md 的表格處理。
 
 ## 4. 審查與最多 3 輪修正

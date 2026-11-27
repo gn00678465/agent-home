@@ -59,14 +59,11 @@ def is_escalated_objection(posts: list[dict[str, Any]], obj: dict[str, Any]) -> 
     ref = obj.get("reply_to")
     if ref is not None:
         parent = by_seq.get(ref)
-        if parent and parent.get("from") == ROUTER:
-            if parent.get("kind") == "answer":
+        if parent and parent.get("from") == ROUTER and parent.get("kind") in ("answer", "ruling"):
+            gp_ref = parent.get("reply_to")
+            gp = by_seq.get(gp_ref) if gp_ref is not None else None
+            if gp and gp.get("kind") == "objection":
                 return True, "re_objection"
-            if parent.get("kind") == "ruling":
-                gp_ref = parent.get("reply_to")
-                gp = by_seq.get(gp_ref) if gp_ref is not None else None
-                if gp and gp.get("kind") == "objection":
-                    return True, "re_objection"
         stage, attempt = obj.get("stage"), int(obj.get("attempt", 1))
         objectors = {
             p["from"] for p in posts

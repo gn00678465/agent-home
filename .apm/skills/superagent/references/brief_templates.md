@@ -8,7 +8,7 @@
 >
 > 日誌依輪次命名：第 1 輪不加前綴（`test.log`），第 n 輪（n ≥ 2）寫 `r<n>_test.log`。`verify-gate` 只看目前這一輪的日誌。
 >
-> 完成標記寫在報告最後一行。worker 寫完報告後，照它的 prompt 執行 `post --kind done --file <報告>`，Router 以這則 post 為完成訊號。`post --kind done` 會先在 worker 端做本地自檢（完成標記、佔位符、本輪既有日誌的 `exit=`；空日誌不擋，特殊情況可加 `--skip-check`）。標記也用於 `verify-gate`；worker 漏發 post 時，`watch` 靠它代發。
+> 完成標記寫在報告最後一行。worker 寫完報告後，照它的 prompt 執行 `post --kind done --file <報告>`，Router 以這則 post 為完成訊號。`post --kind done` 會先在 worker 端做本地自檢（完成標記、佔位符；非 `review` 角色另檢本輪既有日誌的 `exit=`，空日誌不擋，特殊情況可加 `--skip-check`）。標記也用於 `verify-gate`；worker 漏發 post 時，`watch` 靠它代發。
 
 ---
 

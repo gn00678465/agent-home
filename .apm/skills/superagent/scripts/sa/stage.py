@@ -133,7 +133,7 @@ def local_done_check(repo: Repo, worker: dict[str, Any], text: str, report_file:
     hits = sorted(set(PLACEHOLDER_RE.findall(unquoted(text))))
     checks.append({"name": "no_placeholders", "pass": not hits, "hits": hits})
     stage = worker.get("stage")
-    if stage:
+    if stage and worker.get("kind") != "review":
         rnd = int(worker.get("round", 1))
         logs_check = check_round_logs(repo.stage_dir(stage) / "logs", rnd, require_present=False)
         checks.append(logs_check)
@@ -158,7 +158,13 @@ def evaluate_fail_reviews(members: dict[str, Any], posts: list[dict[str, Any]], 
         done_seq = int(w.get("done_seq") or 0)
         addressed = any(
             p.get("from") == ROUTER and p.get("kind") == "ruling" and p["seq"] > done_seq
-            and (wid in (p.get("require_ack_from") or []) or bool(p.get("owner_ack")))
+            and (
+                wid in (p.get("require_ack_from") or [])
+                or (
+                    bool(p.get("owner_ack"))
+                    and (wid in (p.get("to") or []) or (done_seq > 0 and p.get("reply_to") == done_seq))
+                )
+            )
             for p in scoped
         )
         if not addressed:
