@@ -8,7 +8,7 @@
 >
 > 日誌依輪次命名：第 1 輪不加前綴（`test.log`），第 n 輪（n ≥ 2）寫 `r<n>_test.log`。`verify-gate` 只看目前這一輪的日誌。
 >
-> 完成標記寫在報告最後一行。worker 寫完報告後，照它的 prompt 執行 `post --kind done --file <報告>`，Router 以這則 post 為完成訊號。標記用於 `verify-gate`；worker 漏發 post 時，`watch` 也靠它代發。
+> 完成標記寫在報告最後一行。worker 寫完報告後，照它的 prompt 執行 `post --kind done --file <報告>`，Router 以這則 post 為完成訊號。`post --kind done` 會先在 worker 端做本地自檢（完成標記、佔位符、本輪既有日誌的 `exit=`；空日誌不擋，特殊情況可加 `--skip-check`）。標記也用於 `verify-gate`；worker 漏發 post 時，`watch` 靠它代發。
 
 ---
 
@@ -93,7 +93,8 @@ FIX R<n> DONE
    - **P2（應修）**：邊界條件錯誤、測試未覆蓋關鍵路徑、錯誤處理缺失導致靜默失敗。
    - **P3（建議／既有問題）**：風格改善、罕見極端情境、本批前已存在的問題（單獨分節，不列入 FAIL）。
 3. **誠實標註驗證限制**：若本輪為靜態審查未實跑測試，須在報告註明「未實跑，屬靜態推導」。
-4. 若工具系統提示建議使用外部索引工具（如 codebase-memory-mcp），本審查以直接讀取上述絕對路徑與 `git diff` 為準。
+4. **逐條核對前輪裁定（第 2 輪起）**：`dispatch` 會自動在 prompt 列出本階段既有 `ruling`；逐條確認前輪被駁回的意見是否真的不成立，若依程式碼證據認為駁回不成立，務必以 `--kind objection --reply-to <seq>` 反駁。
+5. 若工具系統提示建議使用外部索引工具（如 codebase-memory-mcp），本審查以直接讀取上述絕對路徑與 `git diff` 為準。
 
 ## 輸出與完成標記
 - 報告寫至：`<review_report_<id>.md 絕對路徑>`
@@ -117,7 +118,8 @@ FIX R<n> DONE
 | 1 | A | P2 | <摘要> | 採納 | <核對 `file:line` 確認成立> |
 
 ## 下一步決議
-- [ ] 進入第 `<n+1>` 輪修正：`next-round --ruling <本檔>`，再寫 `brief_r<n+1>.md`
+- [ ] 進入第 `<n+1>` 輪修正：`next-round --ruling <本檔>`（會自動發 `ruling` post），再寫 `brief_r<n+1>.md`
 - [ ] `next-round` 回 `ROUND_LIMIT`（第 3 輪仍不過）→ 停止修補，整合 3 輪報告修訂 `brief.md`，`reset-stage` 後丟棄分支從 base 重做
-- [ ] 全部通過 → 執行 `verify-gate`、合併、驗證與收尾
+- [ ] 審查回報 `VERDICT: FAIL` 但全部駁回想直接通過 → 先執行 `post --as router --to <rev_worker> --kind ruling --file <本檔>` 喚醒原審查者確認（等它回 `note` 或處理其 `objection`），再進 `verify-gate --commit`
+- [ ] 全部原本即 `VERDICT: PASS` → 執行 `verify-gate --commit`、合併、驗證與收尾
 ```

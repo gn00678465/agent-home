@@ -34,7 +34,7 @@ EFFORT_CHOICES = ["none", "minimal", "low", "medium", "high", "xhigh", "max"]
 ROLE_NAME_RE = re.compile(r"[a-z0-9][a-z0-9_-]{0,23}")
 ROLE_KINDS = ["write", "review"]
 
-POST_KINDS = ["brief", "done", "ask", "answer", "note", "alert"]
+POST_KINDS = ["brief", "done", "ask", "answer", "note", "alert", "ruling", "objection"]
 
 ROUTER = "router"
 
